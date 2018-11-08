@@ -57,7 +57,29 @@
                     console.log("POST SUCCESS")});
                 console.log(JSON.stringify(e.lngLat))                        
                 
-            });    
+            });   
+            route = {{route_data|safe}}
+
+            map.on('load', function () {
+                map.addSource("route", {
+                    "type": "geojson",
+                    "data": route
+                });
+
+                map.addLayer({
+                    "id": "route",
+                    "type": "line",
+                    "source": "route",
+                    "layout": {
+                        "line-join": "round",
+                        "line-cap": "round"
+                    },
+                    "paint": {
+                        "line-color": "#007cbf",
+                        "line-width": 2
+                    }
+                });
+            }); 
 
                    
         </script>
