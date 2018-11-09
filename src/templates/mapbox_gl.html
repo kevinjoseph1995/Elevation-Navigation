@@ -1,5 +1,4 @@
 <!-- templates/mapbox_gl.html -->
-
 <html>
     <head>
         <meta charset='utf-8' />
@@ -19,20 +18,60 @@
                 display: block;
                 position: relative;
                 margin: 0px auto;
-                width: 50%;
-                padding: 10px;
                 border: none;
                 border-radius: 3px;
                 font-size: 20px;
-                text-align: center;
+                
                 color: #222;
                 background: #fff;
             }            
         </style>
-
+        <style type='text/css'>
+            .msg {
+                display: block;
+                position: relative;
+                margin: 0px auto;
+                border: none;
+                border-radius: 3px;
+                font-size: 20px; #e7e7e7
+                
+                color: #222;
+                background: #fff;
+            }               
+        </style>
+        <style type='text/css'>
+            .button {
+                position: relative;;
+                background-color: lightgrey; /* Green */
+                border: none;
+                color: black;
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                border: 2px solid black;
+            } 
+            .button:active:enabled {
+                background-color: #3e8e41;
+                box-shadow: 0 5px #666;
+                transform: translateY(4px);
+            }
+            .button:hover:enabled {background-color: #3e8e41}
+                    
+        </style>
+        
         <div id='map'></div>
         <pre id='info'></pre>
+        <pre id="start" class="msg"> Start Location:0  </pre> 
+        <pre id="end" class="msg"> End Location:0  </pre> 
+        <button id="reset" class="button">Reset</button>
+        <button id="calc_route" class="button" disabled>Click start location.</button>
         <script>
+            var start_flag=false;
+            var end_flag=false;
+            var start_loc="";
+            var end_loc="";
             mapboxgl.accessToken = '{{ ACCESS_KEY }}';
             var map = new mapboxgl.Map({
                 container: 'map',
@@ -52,18 +91,48 @@
                 
             });
 
-            map.on('click', function(e) {                 
-                $.post('/data',JSON.stringify(e.lngLat), function(){
-                    console.log("POST SUCCESS")});
-                console.log(JSON.stringify(e.lngLat))                        
-                
-            });   
-            route = {{route_data|safe}}
+            map.on('click', function(e) {
+                console.log(JSON.stringify(e.lngLat))
+                if (!start_flag)
+                {
+                    document.getElementById('start').innerHTML ="Start Location:"+JSON.stringify(e.lngLat);
+                    start_loc=JSON.stringify(e.lngLat);
+                    start_flag=true;
+                    document.getElementById('calc_route').innerHTML ="Click end location."
+                }
+                else if(!end_flag )
+                {
+                    document.getElementById('end').innerHTML ="End Location:"+JSON.stringify(e.lngLat);
+                    end_loc=JSON.stringify(e.lngLat);
+                    end_flag=true;
+                    document.getElementById("calc_route").disabled = false;
+                    document.getElementById('calc_route').innerHTML ="Calculate Route"
+                }
+            });
+            document.getElementById('reset').onclick=function(){
+                document.getElementById('start').innerHTML ="Start Location:0";
+                document.getElementById('end').innerHTML ="End Location:0";
+                document.getElementById('calc_route').innerHTML ="Click start location."
+                document.getElementById("calc_route").disabled = true;
+                start_loc="";
+                start_flag=false;
+                end_loc="";
+                end_flag=false;
+                if (map.getLayer("route")){
+                    map.removeLayer("route");
+                }
 
-            map.on('load', function () {
+                if (map.getSource("route")){
+                    map.removeSource("route");
+                }
+            };
+            function handleData(data)
+            {
+                console.log("BLEH");
+                
                 map.addSource("route", {
                     "type": "geojson",
-                    "data": route
+                    "data": data
                 });
 
                 map.addLayer({
@@ -79,7 +148,25 @@
                         "line-width": 2
                     }
                 });
-            }); 
+                
+
+            }
+            document.getElementById('calc_route').onclick=function(){
+                var input_data='{"start_location":'+start_loc+',"end_location":'+end_loc+'}';
+                $.ajax({
+                    type: "POST",
+                    url: '/route',
+                    data: input_data,
+                    success: function(data){
+                        console.log("POST SUCCESS"); 
+                        console.log(data);
+                        handleData(data);
+                    },
+                    dataType: "json"
+
+                });
+            };             
+            
 
                    
         </script>
