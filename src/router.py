@@ -27,7 +27,7 @@ class Router:
         """
         INCOMPOLETE
         """
-        bbox=self.get_bounding_box((42.377041, -72.519681),(42.350070, -72.528798))
+        bbox=self.get_bounding_box(start_location,end_location)
         G = ox.graph_from_bbox(bbox[0],bbox[1],bbox[2],bbox[3],network_type='drive')
         start_node=ox.get_nearest_node(G, point=start_location)
         end_node=ox.get_nearest_node(G, point=end_location)

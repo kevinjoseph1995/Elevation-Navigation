@@ -16,7 +16,7 @@ ROUTE_URL = "https://api.mapbox.com/directions/v5/mapbox/driving/{0}.json?access
 
 def create_route_url(start_location,end_location):
     # Create a string with all the geo coordinates
-    r=Router()    
+    r=Router()
     lat_longs =r.get_shortest_path(start_location,end_location)
     # Create a url with the geo coordinates and access token
     url = ROUTE_URL.format(lat_longs, MAPBOX_ACCESS_KEY)
@@ -28,7 +28,7 @@ def get_route_data(route_url):
     # Convert the return value to JSON
     data = result.json()
     
-    # Create a geo json object from the routing data    
+    # Create a geo json object from the routing data        
     geometry = data["routes"][0]["geometry"]
     route_data={"geometry":geometry,"properties":{},"type":"Feature"}   
 
@@ -55,7 +55,7 @@ def mapbox_gl():
 
 @app.route('/route',methods=['POST'])
 def get_route():    
-    data=request.get_json(force=True)    
+    data=request.get_json(force=True)      
     route_url=create_route_url((data['start_location']['lat'],data['start_location']['lng']),(data['end_location']['lat'],data['end_location']['lng']))
     route_data=get_route_data(route_url) 
     return json.dumps(route_data)
