@@ -53,6 +53,7 @@ def dfs(src, currDist, currElevDist, path, target, best):
     visited.remove(src)
     return
 
+#https://gist.github.com/kachayev/5990802
 def dijkstra(src, target):
     q, seen, mins = [(0,src,[])], set(), {src: 0}
     while q:
@@ -73,6 +74,7 @@ def dijkstra(src, target):
     return float("inf")
 
 #need to see which one is faster
+#https://codereview.stackexchange.com/questions/79025/dijkstras-algorithm-in-python
 def dijkstra_2(src, target):
     dist = {}
     queue = [(0, src)]
