@@ -53,23 +53,34 @@ def dfs(src, currDist, currElevDist, path, target, best):
     visited.remove(src)
     return
 
+def printPath(parent, dest):
+    "returns the shortest path given a parent mapping and the final dest"
+    path = [dest]
+    curr = parent[dest]
+    while curr!=-1:
+        path.append(curr)
+        curr = parent[curr]
+    return path[::-1]
+
 #https://gist.github.com/kachayev/5990802
 def dijkstra(src, target):
-    q, seen, mins = [(0,src,[])], set(), {src: 0}
+    q, seen, mins = [(0,src)], set(), {src: 0}
+    parent = defaultdict(int)
+    parent[src] = -1
     while q:
-        cost, node, path = heappop(q)
+        cost, node = heappop(q)
         if node not in seen:
             seen.add(node)
-            path.append(node)
-            if node == target: return cost
+            if node == target: return cost, parent
 
             for nei in G.neighbors(node):
                 if nei in seen: continue
                 prev = mins.get(nei, None)
                 next = cost + getCost(node, nei)
                 if prev is None or next < prev:
+                    parent[nei] = node
                     mins[nei] = next
-                    heappush(q, (next, nei, path))
+                    heappush(q, (next, nei))
 
     return float("inf")
 
@@ -81,7 +92,7 @@ def dijkstra_2(src, target):
     while queue:
         cost, node = heappop(queue)
         if node == target:
-            return dist
+            return dist, parent
         if node not in dist: # v is unvisited
             dist[node] = cost
             for nei in G.neighbors(node):
@@ -98,5 +109,6 @@ x = 10.0/100
 best = [[float("-inf"), float("inf")], []]
 dfs(origin[0], 0.0, 0.0, [origin[0]], dest[0], best)
 bfs(origin[0], dest[0], best)
-dijkstra(origin[0], dest[0])
+cost, parent = dijkstra(origin[0], dest[0])
 print(best)
+print(printPath(parent, dest[0]))
