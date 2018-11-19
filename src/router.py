@@ -109,7 +109,8 @@ class Router:
             while current in cameFrom:
                 current = cameFrom[current]
                 total_path.append(current)
-            return total_path
+            lat_longs = ";".join(["{0},{1}".format(G.node[route_node]['x'], G.node[route_node]['y']) for route_node in total_path])
+            return lat_longs
 
         #Graph initialization
         bbox=self.get_bounding_box(start_location,end_location)
@@ -119,7 +120,7 @@ class Router:
         #Initialization of pre-reqs
         start_node=ox.get_nearest_node(G, point=start_location)
         end_node=ox.get_nearest_node(G, point=end_location)
-        #The set of nodes already evaluated
+        #The settotal_path of nodes already evaluated
         closedSet=set()
         # The set of currently discovered nodes that are not evaluated yet.
         # Initially, only the start node is known.        

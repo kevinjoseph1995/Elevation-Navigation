@@ -17,7 +17,7 @@ ROUTE_URL = "https://api.mapbox.com/directions/v5/mapbox/driving/{0}.json?access
 def create_route_url(start_location,end_location):
     # Create a string with all the geo coordinates
     r=Router()
-    lat_longs =r.get_shortest_path(start_location,end_location)
+    lat_longs =r.a_star(start_location,end_location)
     # Create a url with the geo coordinates and access token
     url = ROUTE_URL.format(lat_longs, MAPBOX_ACCESS_KEY)
     return url
