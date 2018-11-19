@@ -101,10 +101,18 @@ class Router:
     
     def a_star(self,start_location,end_location):
         """
-        INCOMPLETE
+        Returns the route(list of nodes) that minimize change in elevation between start and end using the A* node, with the heuristic 
+        being the distance from the end node. 
+        Params:
+            start_location: tuple (lat,long)
+            end_location: tuple (lat,long)
+        Returns:
+            lat_longs: String of the route in the format- "long1,lat1;long2,lat2;..."
         """
-
         def reconstruct_path(cameFrom, current):
+            """
+            Function to retrace the path from end node to start node. Returns in the format required by Mapbox API(for plotting)
+            """
             total_path = [current]
             while current in cameFrom:
                 current = cameFrom[current]
