@@ -34,13 +34,7 @@ def get_route_data(route_url):
 
     return route_data
 
-# @app.route('/mapbox_gl')
-# def mapbox_gl():    
-#     route_data=""
-#     return render_template('mapbox_gl.html', 
-#         ACCESS_KEY=MAPBOX_ACCESS_KEY,
-#         route_data = route_data        
-#     )
+
 
 @app.route('/mapbox_gl')
 def mapbox_gl():    
