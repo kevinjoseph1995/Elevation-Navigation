@@ -143,6 +143,9 @@ class Router:
         # For the first node, that value is completely heuristic.
         fScore[start_node] = G.nodes[start_node]['dist_from_dest']
 
+        shortest_route = nx.shortest_path(G, source=start_node, target=end_node, weight='length')
+        shortest_dist = sum(ox.get_route_edge_attributes(G, shortest_route, 'length'))
+
         while openSet!={}:
             current= min([(node,fScore[node]) for node in openSet],key=lambda t: t[1]) [0]            
             if current==end_node:
@@ -158,20 +161,13 @@ class Router:
                 if neighbor not in openSet:# Discover a new node
                     openSet.add(neighbor)
                 else:
-                    if tentative_gScore>=gScore[neighbor]:
+                    if tentative_gScore>=gScore[neighbor] or tentative_gScore>1.5*shortest_dist:#Stop searching along this path if distance exceed 1.5 times shortest path
                         continue# This is not a better path.
                 cameFrom[neighbor]=current
                 gScore[neighbor]=tentative_gScore
                 fScore[neighbor]=gScore[neighbor] + G.nodes[neighbor]['dist_from_dest']
 
         
-            
-        
-        
-        
-        
-
-
 r=Router()
 # r.get_shortest_path((42.377041, -72.519681),(42.350070, -72.528798))
 print(r.a_star((42.377041, -72.519681),(42.350070, -72.528798)))
