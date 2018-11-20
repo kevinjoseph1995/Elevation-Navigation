@@ -7,7 +7,7 @@ import os
 class Router:
     def __init__(self):
         print("Initialized")
-        self.GOOGLEAPIKEY="AIzaSyDzp8Eb6STrn_kpK9VBm9rGk8vp1jGSn0Q"
+        self.GOOGLEAPIKEY=""
         if os.path.exists("./graph.p"):
             self.G = p.load( open( "graph.p", "rb" ) )
             self.init = True
