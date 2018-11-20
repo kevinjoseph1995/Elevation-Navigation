@@ -1,12 +1,19 @@
 import osmnx as ox
 import networkx as nx
 import numpy as np
+import pickle as p
+import os
 
 class Router:
     def __init__(self):
         print("Initialized")
-        self.GOOGLEAPIKEY=""
-        self.init = False
+        self.GOOGLEAPIKEY="AIzaSyDzp8Eb6STrn_kpK9VBm9rGk8vp1jGSn0Q"
+        if os.path.exists("./graph.p"):
+            self.G = p.load( open( "graph.p", "rb" ) )
+            self.init = True
+            print("Loaded Graph")
+        else:
+            self.init = False
 
     def get_bounding_box(self,start_location,end_location,distance=2000):
         """
@@ -38,8 +45,10 @@ class Router:
         if not self.init:
             # bbox=self.get_bounding_box(start_location,end_location)
             # self.G = ox.graph_from_bbox(bbox[0],bbox[1],bbox[2],bbox[3],network_type='walk', simplify=False)
-            self.G = ox.graph_from_point(start_location, distance=2000, simplify = False, network_type='walk')
+            self.G = ox.graph_from_point(start_location, distance=10000, simplify = False, network_type='walk')
+            p.dump( self.G, open( "graph.p", "wb" ) )
             self.init = True
+            print("Saved Graph")
         
         G = self.G
         start_node=ox.get_nearest_node(G, point=start_location)
@@ -48,6 +57,7 @@ class Router:
         lat_longs = ";".join(["{0},{1}".format(G.node[route_node]['x'], G.node[route_node]['y']) for route_node in route])
         
         return lat_longs
+    
     def get_graph_with_elevation(self,bbox):
         """
         Returns networkx graph G with eleveation data appended to each node and rise/fall grade to each edge.
