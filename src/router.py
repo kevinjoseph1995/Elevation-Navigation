@@ -7,9 +7,6 @@ import os
 class Router:
     def __init__(self):
         print("Initialized")
-<<<<<<< HEAD
-        self.GOOGLEAPIKEY="AIzaSyDRfh8yeK1-sGjd5iCHJCFuUUZWG65PJu8"
-=======
         self.GOOGLEAPIKEY=""
         if os.path.exists("./graph.p"):
             self.G = p.load( open( "graph.p", "rb" ) )
@@ -17,7 +14,6 @@ class Router:
             print("Loaded Graph")
         else:
             self.init = False
->>>>>>> b93f1b23163b274391e38b37f2ea23ce8c0e5c56
 
     def get_bounding_box(self,start_location,end_location,distance=2000):
         """
