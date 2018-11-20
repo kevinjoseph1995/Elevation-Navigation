@@ -5,7 +5,8 @@ import numpy as np
 class Router:
     def __init__(self):
         print("Initialized")
-        self.GOOGLEAPIKEY=""
+        self.GOOGLEAPIKEY="AIzaSyDzp8Eb6STrn_kpK9VBm9rGk8vp1jGSn0Q"
+        self.init = False
 
     def get_bounding_box(self,start_location,end_location,distance=2000):
         """
@@ -34,8 +35,13 @@ class Router:
         Returns:
             lat_longs: String of the in the format- "long1,lat1;long2,lat2;..."
         """
-        bbox=self.get_bounding_box(start_location,end_location)
-        G = ox.graph_from_bbox(bbox[0],bbox[1],bbox[2],bbox[3],network_type='drive')
+        if not self.init:
+            # bbox=self.get_bounding_box(start_location,end_location)
+            # self.G = ox.graph_from_bbox(bbox[0],bbox[1],bbox[2],bbox[3],network_type='walk', simplify=False)
+            self.G = ox.graph_from_point(start_location, distance=2000, simplify = False, network_type='walk')
+            self.init = True
+        
+        G = self.G
         start_node=ox.get_nearest_node(G, point=start_location)
         end_node=ox.get_nearest_node(G, point=end_location)
         route = nx.shortest_path(G, start_node, end_node)
@@ -175,7 +181,6 @@ class Router:
                 gScore[neighbor]=tentative_gScore
                 fScore[neighbor]=gScore[neighbor] + G.nodes[neighbor]['dist_from_dest']
 
-        
 r=Router()
 # r.get_shortest_path((42.377041, -72.519681),(42.350070, -72.528798))
-print(r.a_star((42.377041, -72.519681),(42.350070, -72.528798)))
+# print(r.a_star((42.377041, -72.519681),(42.350070, -72.528798)))
