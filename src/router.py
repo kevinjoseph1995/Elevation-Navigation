@@ -5,7 +5,7 @@ import numpy as np
 class Router:
     def __init__(self):
         print("Initialized")
-        self.GOOGLEAPIKEY=""
+        self.GOOGLEAPIKEY="AIzaSyDzp8Eb6STrn_kpK9VBm9rGk8vp1jGSn0Q"
 
     def get_bounding_box(self,start_location,end_location,distance=2000):
         """
