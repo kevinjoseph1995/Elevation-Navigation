@@ -13,11 +13,10 @@ MAPBOX_ACCESS_KEY = app.config['MAPBOX_ACCESS_KEY']
 # Mapbox driving direction API call
 ROUTE_URL = "https://api.mapbox.com/directions/v5/mapbox/driving/{0}.json?access_token={1}&overview=full&geometries=geojson"
 
-
+r=Router()
 def create_route_url(start_location,end_location):
     # Create a string with all the geo coordinates
-    r=Router()
-    lat_longs =r.a_star(start_location,end_location)
+    lat_longs =r.get_shortest_path(start_location,end_location)
     # Create a url with the geo coordinates and access token
     url = ROUTE_URL.format(lat_longs, MAPBOX_ACCESS_KEY)
     return url
@@ -43,7 +42,6 @@ def mapbox_gl():
     return render_template(
         'mapbox_gl.html', 
         ACCESS_KEY=MAPBOX_ACCESS_KEY
-        
     )
 
 

@@ -51,10 +51,10 @@
             }
             .button:hover:enabled {background-color: #3e8e41}
             .marker {
-                background-image: url('http://mapkeyicons.com/dist/png/marker.png');
+                background-image: url('/marker-15.svg');
                 background-size: cover;
-                width: 30px;
-                height: 30px;
+                width: 20px;
+                height: 20px;
                 border-radius: 50%;
                 cursor: pointer;
             } 
@@ -140,21 +140,26 @@
                     JSON.stringify(e.lngLat);
                 
             });
-
+            
             map.on('click', function(e) {
+
+                lngLat = new Array(e.lngLat.lng, e.lngLat.lat);
+
                 console.log(JSON.stringify(e.lngLat))
                 if (!start_flag)
                 {
+                    points.features.push(turf.point(lngLat));
+                    map.getSource('circleData').setData(points);
                     document.getElementById('start').innerHTML ="Start Location:"+JSON.stringify(e.lngLat);
                     start_loc=JSON.stringify(e.lngLat);
                     start_flag=true;
                     var el = document.createElement('div');
                     el.className = 'marker';
-                    m1 = new mapboxgl.Marker(el)
+                    m1 = new mapboxgl.Marker(el, {offset: [-20 / 2, -20]})
                     .setLngLat(e.lngLat)
                     .addTo(map);
+                    map.flyTo({center: lngLat});
                     
-                    const lngLat = new Array(e.lngLat.lng, e.lngLat.lat);
                     points.features.push(turf.point(lngLat));
                     map.getSource('circleData').setData(points);
                     
@@ -166,7 +171,7 @@
                     end_loc=JSON.stringify(e.lngLat);
                     var el = document.createElement('div');
                     el.className = 'marker';
-                    m2 = new mapboxgl.Marker(el)
+                    m2 = new mapboxgl.Marker(el, {offset: [-20 / 2, -20]})
                     .setLngLat(e.lngLat)
                     .addTo(map);
                     points = turf.featureCollection([]);
@@ -187,6 +192,8 @@
                 m1.remove();
                 m2.remove();
                 end_flag=false;
+                points = turf.featureCollection([]);
+                map.getSource('circleData').setData(points);
                 if (map.getLayer("route")){
                     map.removeLayer("route");
                 }
