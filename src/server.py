@@ -4,7 +4,7 @@ import requests
 from router import Router
 import json
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder="static")
 app.config.from_object(__name__)
 
 app.config.from_envvar('APP_CONFIG_FILE', silent=True)
