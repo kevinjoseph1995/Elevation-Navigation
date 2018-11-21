@@ -53,9 +53,9 @@ class Router:
         G = self.G
         start_node=ox.get_nearest_node(G, point=start_location)
         end_node=ox.get_nearest_node(G, point=end_location)
-        route = nx.shortest_path(G, start_node, end_node)
-        lat_longs = ";".join(["{0},{1}".format(G.node[route_node]['x'], G.node[route_node]['y']) for route_node in route])
-        
+        route = nx.shortest_path(G, start_node, end_node)        
+        lat_longs=[[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in route ]
+        print(lat_longs)
         return lat_longs
     
     def get_graph_with_elevation(self,bbox):
