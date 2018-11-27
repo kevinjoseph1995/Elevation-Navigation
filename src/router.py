@@ -16,6 +16,7 @@ class Router:
             print("Loaded Graph")
         else:
             self.init = False
+        # assert self.G type
 
     def get_bounding_box(self,start_location,end_location,distance=2000):
         """
@@ -33,6 +34,20 @@ class Router:
         bbox=(max(bbox1[0],bbox2[0]),min(bbox1[1],bbox2[1]),max(bbox1[2],bbox2[2]),min(bbox1[3],bbox2[3]))
         
         return bbox
+        # assert bbox type, check start location is within bbox, and same for end location
+
+    def get_graph(self, start_location, end_location):
+        if not self.init:
+            # bbox=self.get_bounding_box(start_location,end_location)
+            # self.G = ox.graph_from_bbox(bbox[0],bbox[1],bbox[2],bbox[3],network_type='walk', simplify=False)
+            self.G = ox.graph_from_point(start_location, distance=10000, simplify = False, network_type='walk')
+            p.dump( self.G, open( "graph.p", "wb" ) )
+            self.init = True
+            print("Saved Graph")
+        
+        return self.G
+        #assert graph object type
+
 
     def get_shortest_path(self,start_location,end_location):
         """

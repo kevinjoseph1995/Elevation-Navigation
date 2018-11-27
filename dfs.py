@@ -35,6 +35,8 @@ def getCost(n1, n2, mode = "normal"):
 	return max(0,G.nodes[n1]["elevation"] - G.nodes[n2]["elevation"])
     else:
         return abs(G.nodes[n1]["elevation"] - G.nodes[n2]["elevation"])
+    
+    #assert iisintace float, Create a graph and confirm edge length is what is expected.
 
 def dfs(src, currDist, currElevDist, path, target, best):
     
@@ -89,7 +91,7 @@ def dijkstra(src, target, xPercent, mode="increase"):
                 prev = mins.get(nei, None)
 		length = getCost(node, nei)
 		if mode == "increase":
-                    next = length - getCost(node, nei, "elevation-diff")
+            next = length - getCost(node, nei, "elevation-diff")
 		else:
 		    next = length + getCost(node, nei, "elevation-diff")
                 nextDist = currDist + length
@@ -99,25 +101,6 @@ def dijkstra(src, target, xPercent, mode="increase"):
                     heappush(q, (next, nextDist, nei))
 
     return float("inf")
-
-#need to see which one is faster
-#https://codereview.stackexchange.com/questions/79025/dijkstras-algorithm-in-python
-def dijkstra_2(src, target):
-    dist = {}
-    queue = [(0, src)]
-    while queue:
-        cost, node = heappop(queue)
-        if node == target:
-            return dist, parent
-        if node not in dist: # v is unvisited
-            dist[node] = cost
-            for nei in G.neighbors(node):
-                if nei not in dist:
-                    heappush(queue, (cost + getCost(node, nei), nei))
-
-    # to give same result as original, assign zero distance to unreachable vertices             
-    return float('inf')
-    # return [0 if x is None else x for x in A]
 
 def hillClimbing(src, currDist, currElevDist, path, target, k, best):
         

@@ -39,7 +39,7 @@ def create_data(start_location,end_location):
 @app.route('/mapbox_gl')
 def mapbox_gl():    
     """ get your data here and return it as json """    
-
+    
     return render_template(
         'mapbox_gl.html', 
         ACCESS_KEY=MAPBOX_ACCESS_KEY
