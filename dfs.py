@@ -146,6 +146,23 @@ def hillClimbing(src, currDist, currElevDist, path, target, k, best):
     visited.remove(src)
     return
 
+def computeElevs(route,mode="both"):
+    total = 0
+    piecewiseElevs = []
+    for i in range(len(route)-1):
+	if mode == "both":
+	    diff = getCost(route[i],route[i+1],"elevation-diff")	
+	elif mode == "gain-only":
+	    diff = getCost(route[i],route[i+1],"gain-only")
+	elif mode == "drop-only":
+	    diff = getCost(route[i],route[i+1],"drop-only")
+	total += diff
+	piecewiseElevs.append(diff)    	
+    return total, piecewiseElevs
+
+def printElevs(route):
+    for singleNode in route:
+	print(G.nodes[singleNode]["elevation"])
 
 #normal = 0
 #visited = set()
@@ -157,9 +174,26 @@ def hillClimbing(src, currDist, currElevDist, path, target, k, best):
 #print(best)
 xPercent = 0.5
 absDiff = getCost(origin[0],dest[0],mode="elevation-diff")
-print (r)
+print ("Shortest path:",r) 
+print ("Elevation difference between source and destination:",absDiff)
+#print ("Elevations of each node on the shortest path:")
+#printElevs(r)
+sTotal,sPiecewise = computeElevs(r,"both")
+sGainTotal, sGainPiecewise = computeElevs(r,"gain-only")
+print ("Piecewise elevations:",sPiecewise)
+print ("Elevation total and gain total:",sTotal,sGainTotal)
+
+# Dijkstra's stats
 currDist, currElevDist, parent = dijkstra(origin[0], dest[0], xPercent, mode="increase")
-print(printPath(parent, dest[0]))
-print("Shortest:",shortest,"Elevation difference between source and destination:",absDiff)
-print("Dijkstras:",currDist,"Dijkstras elevation difference:", currElevDist)
+route = printPath(parent, dest[0])
+print ("**********************************************************")
+print("Dijkstra's path:",route)
+print("Shortest length:",shortest,"Dijkstras length:",currDist)
+#print("Elevations of each node on Dijkstra's path:")
+#printElevs(route)
+dTotal,dPiecewise = computeElevs(route,"both")
+dGainTotal, dGainPiecewise = computeElevs(route,"gain-only")
+print("Piecewise elevations:",dPiecewise)
+print("Elevation total and gain total:",dTotal,dGainTotal)
+
 assert (currDist <= (1+xPercent)*shortest)
