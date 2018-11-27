@@ -194,33 +194,58 @@
                 end_flag=false;
                 points = turf.featureCollection([]);
                 map.getSource('circleData').setData(points);
-                if (map.getLayer("route")){
-                    map.removeLayer("route");
+                if (map.getLayer("shortest_route")){
+                    map.removeLayer("shortest_route");
                 }
 
-                if (map.getSource("route")){
-                    map.removeSource("route");
+                if (map.getSource("shortest_route")){
+                    map.removeSource("shortest_route");
+                }
+                if (map.getLayer("ele_route")){
+                    map.removeLayer("ele_route");
+                }
+
+                if (map.getSource("ele_route")){
+                    map.removeSource("ele_route");
                 }
             };
             function handleData(data)
             {
-                console.log("BLEH");
+                console.log("Routes Drawn");
                 
-                map.addSource("route", {
+                map.addSource("shortest_route", {
                     "type": "geojson",
-                    "data": data
+                    "data": data["shortest_route"]
                 });
 
                 map.addLayer({
-                    "id": "route",
+                    "id": "shortest_route",
                     "type": "line",
-                    "source": "route",
+                    "source": "shortest_route",
                     "layout": {
                         "line-join": "round",
                         "line-cap": "round"
                     },
                     "paint": {
                         "line-color": "#007cbf",
+                        "line-width": 2
+                    }
+                });
+                map.addSource("ele_route", {
+                    "type": "geojson",
+                    "data": data["elevation_route"]
+                });
+
+                map.addLayer({
+                    "id": "ele_route",
+                    "type": "line",
+                    "source": "ele_route",
+                    "layout": {
+                        "line-join": "round",
+                        "line-cap": "round"
+                    },
+                    "paint": {
+                        "line-color": "#B01F00",
                         "line-width": 2
                     }
                 });

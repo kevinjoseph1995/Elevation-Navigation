@@ -3,11 +3,13 @@ import networkx as nx
 import numpy as np
 import pickle as p
 import os
+import config
 
 class Router:
     def __init__(self):
         print("Initialized")
-        self.GOOGLEAPIKEY=""
+        
+        self.GOOGLEAPIKEY=config.API["googleapikey"]
         if os.path.exists("./graph.p"):
             self.G = p.load( open( "graph.p", "rb" ) )
             self.init = True
@@ -40,7 +42,7 @@ class Router:
             start_location: tuple (lat,long)
             end_location: tuple (lat,long)
         Returns:
-            lat_longs: String of the in the format- "long1,lat1;long2,lat2;..."
+            lat_longs: List of [lon,lat] in the route
         """
         if not self.init:
             # bbox=self.get_bounding_box(start_location,end_location)
@@ -54,8 +56,7 @@ class Router:
         start_node=ox.get_nearest_node(G, point=start_location)
         end_node=ox.get_nearest_node(G, point=end_location)
         route = nx.shortest_path(G, start_node, end_node)        
-        lat_longs=[[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in route ]
-        print(lat_longs)
+        lat_longs=[[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in route ]        
         return lat_longs
     
     def get_graph_with_elevation(self,bbox):
@@ -68,8 +69,7 @@ class Router:
             G: networkx graph
         """
         G = ox.graph_from_bbox(bbox[0],bbox[1],bbox[2],bbox[3],network_type='drive')        
-        G = ox.add_node_elevations(G, api_key=self.GOOGLEAPIKEY)
-        G = ox.add_edge_grades(G)
+        G = ox.add_node_elevations(G, api_key=self.GOOGLEAPIKEY)        
 
         return G
     
@@ -122,9 +122,30 @@ class Router:
         Params:
             start_location: tuple (lat,long)
             end_location: tuple (lat,long)
-        Returns:
-            lat_longs: String of the route in the format- "long1,lat1;long2,lat2;..."
+         Returns:
+            lat_longs: List of [lon,lat] in the route
         """
+        if not self.init:
+            # bbox=self.get_bounding_box(start_location,end_location)
+            # self.G = ox.graph_from_bbox(bbox[0],bbox[1],bbox[2],bbox[3],network_type='walk', simplify=False)
+            self.G = ox.graph_from_point(start_location, distance=10000, simplify = False, network_type='walk')
+            p.dump( self.G, open( "graph.p", "wb" ) )
+            self.init = True
+            print("Saved Graph")
+        
+        G = self.G
+        
+        #Graph initialization
+        bbox=self.get_bounding_box(start_location,end_location)
+        G=self.get_graph_with_elevation(bbox)
+        G=self.add_dist_from_dest(G,end_location)
+        #Initialization of pre-reqs
+        start_node=ox.get_nearest_node(G, point=start_location)
+        end_node=ox.get_nearest_node(G, point=end_location)
+
+
+        shortest_route = nx.shortest_path(G, source=start_node, target=end_node, weight='length')
+        shortest_dist = sum(ox.get_route_edge_attributes(G, shortest_route, 'length'))
         def reconstruct_path(cameFrom, current):
             """
             Function to retrace the path from end node to start node. Returns in the format required by Mapbox API(for plotting)
@@ -133,17 +154,10 @@ class Router:
             while current in cameFrom:
                 current = cameFrom[current]
                 total_path.append(current)
-            lat_longs = ";".join(["{0},{1}".format(G.node[route_node]['x'], G.node[route_node]['y']) for route_node in total_path])
-            return lat_longs
-
-        #Graph initialization
-        bbox=self.get_bounding_box(start_location,end_location)
-        G=self.get_graph_with_elevation(bbox)
-        G=self.add_dist_from_dest(G,end_location)
-
-        #Initialization of pre-reqs
-        start_node=ox.get_nearest_node(G, point=start_location)
-        end_node=ox.get_nearest_node(G, point=end_location)
+            ele_latlong=[[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in total_path ] 
+            shortest_latlong=[[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in shortest_route ] 
+            return (ele_latlong,shortest_latlong)        
+        
         #The settotal_path of nodes already evaluated
         closedSet=set()
         # The set of currently discovered nodes that are not evaluated yet.
@@ -165,10 +179,9 @@ class Router:
         fScore={}
 
         # For the first node, that value is completely heuristic.
-        fScore[start_node] = G.nodes[start_node]['dist_from_dest']
+        fScore[start_node] = 0#G.nodes[start_node]['dist_from_dest']
 
-        shortest_route = nx.shortest_path(G, source=start_node, target=end_node, weight='length')
-        shortest_dist = sum(ox.get_route_edge_attributes(G, shortest_route, 'length'))
+        
 
         while openSet!={}:
             current= min([(node,fScore[node]) for node in openSet],key=lambda t: t[1]) [0]            
@@ -181,16 +194,16 @@ class Router:
                 if neighbor in closedSet:
                     continue # Ignore the neighbor which is already evaluated.
                 #The distance from start to a neighbor
-                tentative_gScore= gScore[current]+abs(G.nodes[current]['elevation'] - G.nodes[neighbor]['elevation'])
+                tentative_gScore= gScore[current]+1/abs(G.nodes[current]['elevation'] - G.nodes[neighbor]['elevation'])
                 if neighbor not in openSet:# Discover a new node
                     openSet.add(neighbor)
                 else:
-                    if tentative_gScore>=gScore[neighbor] or tentative_gScore>1.5*shortest_dist:#Stop searching along this path if distance exceed 1.5 times shortest path
+                    if tentative_gScore>=gScore[neighbor] :#Stop searching along this path if distance exceed 1.5 times shortest path
                         continue# This is not a better path.
                 cameFrom[neighbor]=current
                 gScore[neighbor]=tentative_gScore
-                fScore[neighbor]=gScore[neighbor] + G.nodes[neighbor]['dist_from_dest']
+                fScore[neighbor]=gScore[neighbor]# + G.nodes[neighbor]['dist_from_dest']
 
-r=Router()
+
 # r.get_shortest_path((42.377041, -72.519681),(42.350070, -72.528798))
 # print(r.a_star((42.377041, -72.519681),(42.350070, -72.528798)))

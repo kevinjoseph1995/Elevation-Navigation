@@ -14,17 +14,27 @@ MAPBOX_ACCESS_KEY = app.config['MAPBOX_ACCESS_KEY']
 ROUTE_URL = "https://api.mapbox.com/directions/v5/mapbox/driving/{0}.json?access_token={1}&overview=full&geometries=geojson"
 
 r=Router()
-def create_route_geojson(start_location,end_location):
-    # Create a string with all the geo coordinates
-    lat_longs =r.get_shortest_path(start_location,end_location)
+
+def create_geojson(coordinates):
     geojson={}
     geojson["properties"]={}
     geojson["type"]="Feature"
     geojson["geometry"]={}
     geojson["geometry"]["type"]="LineString"
-    geojson["geometry"]["coordinates"]=lat_longs
-    
+    geojson["geometry"]["coordinates"]=coordinates
+
     return geojson
+
+def create_data(start_location,end_location):
+    # Create a string with all the geo coordinates
+    (ele_latlong,shortest_latlong) =r.a_star(start_location,end_location)
+    data={}
+    data["elevation_route"]=create_geojson(ele_latlong)
+    data["shortest_route"]=create_geojson(ele_latlong)
+    if data["elevation_route"]==data["shortest_route"]:
+        print("EQUAL")
+
+    return data
     
 @app.route('/mapbox_gl')
 def mapbox_gl():    
@@ -39,5 +49,5 @@ def mapbox_gl():
 @app.route('/route',methods=['POST'])
 def get_route():    
     data=request.get_json(force=True)
-    route_data=create_route_geojson((data['start_location']['lat'],data['start_location']['lng']),(data['end_location']['lat'],data['end_location']['lng']))
+    route_data=create_data((data['start_location']['lat'],data['start_location']['lng']),(data['end_location']['lat'],data['end_location']['lng']))
     return json.dumps(route_data)
