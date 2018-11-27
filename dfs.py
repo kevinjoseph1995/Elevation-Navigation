@@ -72,10 +72,9 @@ def printPath(parent, dest):
     return path[::-1]
 
 #https://gist.github.com/kachayev/5990802
-def dijkstra(src, target, x_percent, mode="increase"):
+def dijkstra(src, target, xPercent, mode="increase"):
     q, seen, mins = [(0.0, 0.0, src)], set(), {src: 0}
-    #parent = defaultdict(int)
-    parent = {}
+    parent = defaultdict(int)
     parent[src] = -1
     while q:
         currElevDist, currDist, node = heappop(q)
@@ -94,7 +93,7 @@ def dijkstra(src, target, x_percent, mode="increase"):
 		else:
 		    next = length + getCost(node, nei, "elevation-diff")
                 nextDist = currDist + length
-                if nextDist < shortest*(1.0+x_percent) and (prev is None or next < prev):
+                if nextDist < shortest*(1.0+xPercent) and (prev is None or next < prev):
                     parent[nei] = node
                     mins[nei] = next
                     heappush(q, (next, nextDist, nei))
@@ -156,6 +155,11 @@ def hillClimbing(src, currDist, currElevDist, path, target, k, best):
 #hillClimbing(origin[0], 0.0, 0.0, [origin[0]], dest[0], 2, best)
 #costDist, costElev, parent = dijkstra(origin[0], dest[0])
 #print(best)
+xPercent = 0.5
+absDiff = getCost(origin[0],dest[0],mode="elevation-diff")
 print (r)
-currDist, currElevDist, parent = dijkstra(origin[0], dest[0], 0.5, mode="increase")
+currDist, currElevDist, parent = dijkstra(origin[0], dest[0], xPercent, mode="increase")
 print(printPath(parent, dest[0]))
+print("Shortest:",shortest,"Elevation difference between source and destination:",absDiff)
+print("Dijkstras:",currDist,"Dijkstras elevation difference:", currElevDist)
+assert (currDist <= (1+xPercent)*shortest)
