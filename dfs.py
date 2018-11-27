@@ -4,12 +4,15 @@ import networkx as nx
 import osmnx as ox 
 import requests  
 # G = ox.graph_from_place('Piedmont, California, USA', network_type='walk')
-org, dst = (37.826003, -122.23309), (37.817440, -122.250660)
-G = ox.graph_from_point(org, distance=2000, simplify = False)
-bbox = ox.bbox_from_point(org, distance=2000, simplify = False)
+#org, dst = (37.826003, -122.23309), (37.817440, -122.250660)
+#org, dst = (42.346740, -72.512180), (42.395160, -72.531190) Boulders, CICS
+
+org, dst = (37.825927, -122.232999), (37.826385, -122.238825) 
+G = ox.graph_from_point(org, distance=900, simplify = False)
+bbox = ox.bbox_from_point(org, distance=900)
 
 
-G = ox.add_node_elevations(G, api_key=google_elevation_api_key)
+G = ox.add_node_elevations(G, api_key="")
 G = ox.add_edge_grades(G)
 
 G_proj = ox.project_graph(G)
@@ -24,6 +27,12 @@ shortest = sum(ox.get_route_edge_attributes(G_proj, r, 'length'))
 def getCost(n1, n2, mode = "normal"):
     if mode == "normal":
         return G.edges[n1, n2 ,0]["length"]
+    elif mode == "elevation-diff":
+	return G.nodes[n2]["elevation"] - G.nodes[n1]["elevation"]
+    elif mode == "gain-only":
+	return max(0,G.nodes[n2]["elevation"] - G.nodes[n1]["elevation"])
+    elif mode == "drop-only":
+	return max(0,G.nodes[n1]["elevation"] - G.nodes[n2]["elevation"])
     else:
         return abs(G.nodes[n1]["elevation"] - G.nodes[n2]["elevation"])
 
@@ -63,13 +72,13 @@ def printPath(parent, dest):
     return path[::-1]
 
 #https://gist.github.com/kachayev/5990802
-def dijkstra(src, target):
+def dijkstra(src, target, x_percent, mode="increase"):
     q, seen, mins = [(0.0, 0.0, src)], set(), {src: 0}
-    parent = defaultdict(int)
+    #parent = defaultdict(int)
+    parent = {}
     parent[src] = -1
     while q:
         currElevDist, currDist, node = heappop(q)
-        currElevDist = -currElevDist
         
         if node not in seen:
             seen.add(node)
@@ -79,12 +88,16 @@ def dijkstra(src, target):
             for nei in G.neighbors(node):
                 if nei in seen: continue
                 prev = mins.get(nei, None)
-                next = currElevDist + getCost(node, nei, "elev")
-                nextDist = currDist + getCost(node, nei)
-                if currDist < shortest*(1.0+x) and (prev is None or next < prev):
+		length = getCost(node, nei)
+		if mode == "increase":
+                    next = length - getCost(node, nei, "elevation-diff")
+		else:
+		    next = length + getCost(node, nei, "elevation-diff")
+                nextDist = currDist + length
+                if nextDist < shortest*(1.0+x_percent) and (prev is None or next < prev):
                     parent[nei] = node
                     mins[nei] = next
-                    heappush(q, (-next, nextDist, nei))
+                    heappush(q, (next, nextDist, nei))
 
     return float("inf")
 
@@ -135,13 +148,14 @@ def hillClimbing(src, currDist, currElevDist, path, target, k, best):
     return
 
 
-normal = 0
-visited = set()
-x = 10.0/100
-best = [[float("-inf"), float("inf")], []]
-dfs(origin[0], 0.0, 0.0, [origin[0]], dest[0], best)
-hillClimbing(origin[0], 0.0, 0.0, [origin[0]], dest[0], 2, best)
-bfs(origin[0], dest[0], best)
-costDist, costElev, parent = dijkstra(origin[0], dest[0])
-print(best)
+#normal = 0
+#visited = set()
+#x = 10.0/100
+#best = [[float("-inf"), float("inf")], []]
+#dfs(origin[0], 0.0, 0.0, [origin[0]], dest[0], best)
+#hillClimbing(origin[0], 0.0, 0.0, [origin[0]], dest[0], 2, best)
+#costDist, costElev, parent = dijkstra(origin[0], dest[0])
+#print(best)
+print (r)
+currDist, currElevDist, parent = dijkstra(origin[0], dest[0], 0.5, mode="increase")
 print(printPath(parent, dest[0]))
