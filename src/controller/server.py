@@ -30,7 +30,8 @@ def create_data(start_location,end_location):
     # Create a string with all the geo coordinates
     M=model.graph_model.Model()
     G=M.get_graph(start_location,end_location)
-    (ele_latlong,shortest_latlong) =algorithms.a_star(G,start_location,end_location)
+    algos=algorithms.Algorithms()
+    (ele_latlong,shortest_latlong) =algos.a_star(G,start_location,end_location)
     data={}
     data["elevation_route"]=create_geojson(ele_latlong)
     data["shortest_route"]=create_geojson(ele_latlong)
