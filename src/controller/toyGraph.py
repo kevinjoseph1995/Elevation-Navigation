@@ -1,4 +1,5 @@
 import networkx as nx
+import algorithms
 
 #graph 1
 G = nx.Graph()
@@ -8,7 +9,7 @@ G.add_weighted_edges_from(edgeList)
 elev = [0, 0, 0, 2, 2, 3, 4]
 
 for i, e in enumerate(elev):
-    G.node[i]["elev"] = e
+    G.node[i]["elevation"] = e
 
 def getSum(G, route, attribute):
 
@@ -26,3 +27,6 @@ highElevDist = 8.0
 x = 100 #in percentage
 
 assert getSum(G, nx.shortest_path(G, 0, 2, "weight") , "weight") == 4
+algos=algorithms.Algorithms()
+print(algos.a_star(G,0,2))
+assert getSum(G, algos.a_star(G,0,2) , "weight") == 4

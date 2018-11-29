@@ -1,4 +1,4 @@
-
+{#!/bin/bash
 source activate elenav
 export FLASK_APP=controller/server.py
 export FLASK_DEBUG=1

@@ -29,23 +29,19 @@ def create_geojson(coordinates):
 def create_data(start_location,end_location):
     # Create a string with all the geo coordinates
     M=model.graph_model.Model()
-    G=M.get_graph(start_location,end_location)
-    algos=algorithms.Algorithms()
-    (ele_latlong,shortest_latlong) =algos.a_star(G,start_location,end_location)
-    data={}
-    data["elevation_route"]=create_geojson(ele_latlong)
-    data["shortest_route"]=create_geojson(ele_latlong)
-    if data["elevation_route"]==data["shortest_route"]:
-        print("EQUAL")
+    G=M.get_graph(start_location,end_location)    
+    ele_latlong =algorithms.a_star(G,start_location,end_location)    
+    
+    data={"elevation_route":create_geojson(ele_latlong)   }  
 
     return data
     
-@app.route('/mapbox_gl')
-def mapbox_gl():    
+@app.route('/mapbox_gl_new')
+def mapbox_gl_new():    
     """ get your data here and return it as json """    
 
     return render_template(
-        'mapbox_gl.html', 
+        'mapbox_gl_new.html', 
         ACCESS_KEY=MAPBOX_ACCESS_KEY
     )
 
