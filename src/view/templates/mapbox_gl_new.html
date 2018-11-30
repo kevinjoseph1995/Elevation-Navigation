@@ -9,6 +9,8 @@
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script src='https://api.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js'></script>
         <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery.simpleWeather/3.1.0/jquery.simpleWeather.min.js'></script>
+        <link rel= "stylesheet" type= "text/css" href= "styles/button-style.css">
+        <link rel= "stylesheet" type= "text/css" href= "styles/text_styles.css">
         <style>
             body { margin:0; padding:0; }
             #wrapper { position:absolute; top:0; bottom:0; width:100%; }
@@ -95,14 +97,14 @@
         <div class="sidenav">
             <img id="logo" src= "/elenav.png" alt="Logo" style="width:100%" />
             
-            <div id="weather" class="msg"></div>
-            <button id="geolocation" class="button" >Use Current Location</button>
+            <div id="weather" class="text-subhead"></div>
+            <button id="geolocation" class="pure-material-button-contained" >Use Current Location</button>
             <div id='info'></div>
-            <div id="start" class="msg"> Start Location:0  </div> 
-            <div id="end" class="msg"> End Location:0  </div> 
-            <button id="reset" class="button">Reset</button>
-            <button id="calc_route" class="button" disabled>Click start location.</button>
-            <div id="ele_stats" class="msg"> Elevation Statistics:  </div> 
+            <div id="start" class="text-subhead"> Start Location:0  </div> 
+            <div id="end" class="text-subhead"> End Location:0  </div> 
+            <button id="reset" class="pure-material-button-contained">Reset</button>
+            <button id="calc_route" class="pure-material-button-contained" disabled>Click start location.</button>
+            <div id="ele_stats" class="text-subhead"> Elevation Statistics:  </div> 
             <div id="eleProfile"></div>
             
             
@@ -160,9 +162,10 @@
             );
             map.on('mousemove', function (e) {
                 
-                document.getElementById('info').innerHTML =                    
+                document.getElementById('info').innerHTML = 
+                '<br />' +                   
                     "Latitude: "+e.lngLat["lat"]+ '<br />' +
-                    "Longitude: "+e.lngLat["lng"];
+                    "Longitude: "+e.lngLat["lng"]+'<br />' ;
                     
                     
                 
