@@ -30,10 +30,11 @@ def create_data(start_location,end_location):
     # Create a string with all the geo coordinates
     M=model.graph_model.Model()
     G=M.get_graph(start_location,end_location)    
-    ele_latlong =algorithms.a_star(G,start_location,end_location)    
+    ele_latlong,ascent,descent =algorithms.a_star(G,start_location,end_location)    
     
     data={"elevation_route":create_geojson(ele_latlong)   }  
-
+    data["ascent"]=ascent
+    data["descent"]=descent
     return data
     
 @app.route('/mapbox_gl_new')

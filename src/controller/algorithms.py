@@ -4,12 +4,29 @@ import matplotlib.pyplot as plt
 
 def create_elevation_profile(G,total_path):
     elevation_profile=[G.node[route_node]['elevation'] for route_node in total_path]
+    plt.figure()
+    plt.title("Elevation Profile")
+    plt.ylabel("Elevation (m)")
     plt.plot(elevation_profile)
+    
     plt.savefig('./view/static/elevation_profile.png')
+    ascent=0.0
+    descent=0.0
+    if len(total_path)>1:
+        for i in range(1,len(total_path)):
+            if G.node[total_path[i]]['elevation']-G.node[total_path[i-1]]['elevation']>=0:
+                ascent+=G.node[total_path[i]]['elevation']-G.node[total_path[i-1]]['elevation']
+            else:
+                descent+=-(G.node[total_path[i]]['elevation']-G.node[total_path[i-1]]['elevation'])
+
+
+
+
+    return ascent,descent
 
 
 def sample_algorithm_format(G,start_location,end_location):
-    # Should return (route(list of [(longs,lats)]), elevation gain,elevation drop, elevation of each node)
+    # Should return (route(list of [(longs,lats)]), elevation gain,elevation drop
     pass
 
 
@@ -41,8 +58,8 @@ def a_star(G,start_location,end_location):
             current = cameFrom[current]
             total_path.append(current)
         ele_latlong=[[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in total_path ] 
-        create_elevation_profile(G,total_path)
-        return ele_latlong     
+        ascent,descent=create_elevation_profile(G,total_path)
+        return ele_latlong,ascent,descent    
         
     
     #The settotal_path of nodes already evaluated
