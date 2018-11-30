@@ -7,7 +7,7 @@ def create_elevation_profile(G,total_path):
     plt.figure()
     plt.title("Elevation Profile")
     plt.ylabel("Elevation (m)")
-    plt.plot(elevation_profile)
+    plt.plot(elevation_profile,color='black')
     
     plt.savefig('./view/static/elevation_profile.png')
     ascent=0.0
