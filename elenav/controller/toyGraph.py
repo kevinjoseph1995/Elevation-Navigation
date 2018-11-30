@@ -1,5 +1,5 @@
 import networkx as nx
-import algorithms
+import elenav.controller.algorithms as algos
 
 #graph 1
 G = nx.Graph()
@@ -27,6 +27,6 @@ highElevDist = 8.0
 x = 100 #in percentage
 
 assert getSum(G, nx.shortest_path(G, 0, 2, "weight") , "weight") == 4
-algos=algorithms.Algorithms()
-print(algos.a_star(G,0,2))
-assert getSum(G, algos.a_star(G,0,2) , "weight") == 4
+a=algos.Algorithms()
+print(a.a_star(G,0,2))
+assert getSum(G, a.a_star(G,0,2) , "weight") == 4

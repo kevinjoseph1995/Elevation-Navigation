@@ -2,8 +2,9 @@ from flask import Flask, request, session, g, redirect, \
     url_for, abort, render_template, flash,jsonify
 import requests
 import json
-import algorithms
-import model
+import elenav.controller.algorithms as algorithms
+import os
+import elenav.model
 
 app = Flask(__name__, static_url_path='', static_folder="../view/static",template_folder="../view/templates")
 app.config.from_object(__name__)
@@ -28,7 +29,7 @@ def create_geojson(coordinates):
 
 def create_data(start_location,end_location):
     # Create a string with all the geo coordinates
-    M=model.graph_model.Model()
+    M=elenav.model.graph_model.Model()
     G=M.get_graph(start_location,end_location)    
     ele_latlong,ascent,descent =algorithms.a_star(G,start_location,end_location)    
     

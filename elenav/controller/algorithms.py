@@ -8,8 +8,7 @@ def create_elevation_profile(G,total_path):
     plt.title("Elevation Profile")
     plt.ylabel("Elevation (m)")
     plt.plot(elevation_profile,color='black')
-    
-    plt.savefig('./view/static/elevation_profile.png')
+    plt.savefig('./elenav/view/static/elevation_profile.png')
     ascent=0.0
     descent=0.0
     if len(total_path)>1:

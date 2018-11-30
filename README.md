@@ -1,4 +1,6 @@
 # Elevation-Navigation
 
-Current navigation systems optimize for the shortest or fastest route but do not consider elevation gain. However, for most people who hike, walk or bike elevation gain is an important factor. Daily commuters would prefer an extra mile over a shorter route with high elevation gain. Similarly, those looking for an intense hike might want to take the route with a high elevation gain. 
-We aim to build EleNa, an Elevation-based Navigation system that determines, given a start and an end location, a route that maximizes or minimizes elevation gain, while limiting the total distance between the two locations to x% of the shortest path.
+- Make `start` an executable by running `chmod +x start`
+- Before running the executable that you're in an environment with osmnx and networkx (apart from other dependencies in requirements.txt) installed. 
+- ```./start``` To start up the application. 
+- Head over to `http://127.0.0.1:5000/mapbox_gl_new` on preferably Google Chrome to use the web interface. 

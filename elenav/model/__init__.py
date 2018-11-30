@@ -1,0 +1,1 @@
+from elenav.model import graph_model

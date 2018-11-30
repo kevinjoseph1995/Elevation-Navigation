@@ -3,7 +3,7 @@ import networkx as nx
 import numpy as np
 import pickle as p
 import os
-from model.config import API
+from elenav.model.config import API
 
 class Model:
     def __init__(self):
