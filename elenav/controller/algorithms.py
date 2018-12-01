@@ -29,7 +29,7 @@ def sample_algorithm_format(G,start_location,end_location):
     pass
 
 
-def a_star(G,start_location,end_location):
+def a_star(G,start_location,end_location, reconstruct = True):
     """
     Returns the route(list of nodes) that minimize change in elevation between start and end using the A* node, with the heuristic 
     being the distance from the end node. 
@@ -106,3 +106,45 @@ def a_star(G,start_location,end_location):
             cameFrom[neighbor]=current
             gScore[neighbor]=tentative_gScore
             fScore[neighbor]=gScore[neighbor]# + G.nodes[neighbor]['dist_from_dest']
+
+def getCost(n1, n2, mode = "normal"):
+    if mode == "normal":
+        return G.edges[n1, n2 ,0]["length"]
+    elif mode == "elevation-diff":
+	    return G.nodes[n2]["elevation"] - G.nodes[n1]["elevation"]
+    elif mode == "gain-only":
+	    return max(0,G.nodes[n2]["elevation"] - G.nodes[n1]["elevation"])
+    elif mode == "drop-only":
+	    return max(0,G.nodes[n1]["elevation"] - G.nodes[n2]["elevation"])
+    else:
+        return abs(G.nodes[n1]["elevation"] - G.nodes[n2]["elevation"])
+    
+    #assert iisintace float, Create a graph and confirm edge length is what is expected.
+
+def dfs(G, start_location, currDist, currElevDist, path, descent, end_location, best, x = 0.0):
+    """
+    Returns the route(list of nodes) that minimize change in elevation between start and end using the A* node, with the heuristic 
+    being the distance from the end node. 
+    Params:
+        start_location: tuple (lat,long)
+        end_location: tuple (lat,long)
+        Returns:
+        lat_longs: List of [lon,lat] in the route
+    """
+    if currDist > shortest*(1.0+x):
+        return
+    
+    if start_location == end_location:
+        if best[0] < currElevDist:
+            best = [path[:], currDist, currElevDist, descent]
+        return
+    
+    visited.add(start_location)
+    
+    for nei in G.neighbors(start_location):
+        if nei not in visited:
+            dfs(nei, currDist + getCost(start_location, nei), currElevDist + getCost(start_location, nei, "elev"), \
+                path + [nei], descent + min(getCost(start_location, nei, "elevation-diff"), 0.0) end_location, best, x)
+    
+    visited.remove(start_location)
+    return best

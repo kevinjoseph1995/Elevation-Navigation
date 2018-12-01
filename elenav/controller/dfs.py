@@ -24,46 +24,6 @@ if origin[1] > 100 or dest[1] > 100:
 r = nx.shortest_path(G_proj, source=origin[0], target=dest[0], weight='length')
 shortest = sum(ox.get_route_edge_attributes(G_proj, r, 'length'))
 
-def getCost(n1, n2, mode = "normal"):
-    if mode == "normal":
-        return G.edges[n1, n2 ,0]["length"]
-    elif mode == "elevation-diff":
-	return G.nodes[n2]["elevation"] - G.nodes[n1]["elevation"]
-    elif mode == "gain-only":
-	return max(0,G.nodes[n2]["elevation"] - G.nodes[n1]["elevation"])
-    elif mode == "drop-only":
-	return max(0,G.nodes[n1]["elevation"] - G.nodes[n2]["elevation"])
-    else:
-        return abs(G.nodes[n1]["elevation"] - G.nodes[n2]["elevation"])
-    
-    #assert iisintace float, Create a graph and confirm edge length is what is expected.
-
-def dfs(src, currDist, currElevDist, path, target, best):
-    
-    if currDist > shortest*(1.0+x):
-        return
-    
-    if src == target:
-        if normal : 
-            if best[0][1] > currDist:
-                best[0] = [currElevDist, currDist]
-                # best[1] = path[:]
-        
-        else:
-            if best[0][0] < currElevDist:
-                best[0] = [currElevDist, currDist]
-                # best[1] = path[:]
-        return
-    
-    visited.add(src)
-    
-    for nei in G.neighbors(src):
-        if nei not in visited:
-            dfs(nei, currDist + getCost(src, nei), currElevDist + getCost(src, nei, "elev"), path + [nei], target, best)
-    
-    visited.remove(src)
-    return
-
 def printPath(parent, dest):
     "returns the shortest path given a parent mapping and the final dest"
     path = [dest]
