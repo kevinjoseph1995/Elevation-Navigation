@@ -123,13 +123,19 @@ def getCost(n1, n2, mode = "normal"):
 
 def dfs(G, start_location, currDist, currElevDist, path, descent, end_location, best, x = 0.0):
     """
-    Returns the route(list of nodes) that minimize change in elevation between start and end using the A* node, with the heuristic 
-    being the distance from the end node. 
+    Returns the route(list of nodes) that maximizes absolute change in elevation between start and end using naive dfs
     Params:
+        G : graph
         start_location: tuple (lat,long)
         end_location: tuple (lat,long)
+        currDist : total distance travelled
+        currElevDist : total change in elevation (not considering drops)
+        path : path of nodes
+        descent : total sum of drops for the given path
+        best : list to keep track of best seen so far
+        x : threshold for distance
         Returns:
-        lat_longs: List of [lon,lat] in the route
+        lat_longs: [path, currDist, currElevDist , descent]
     """
     if currDist > shortest*(1.0+x):
         return
