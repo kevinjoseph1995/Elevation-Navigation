@@ -39,7 +39,7 @@ def test_shortest_path():
     
     #TESTING ALGO CORRECTNESS
     G = nx.Graph()
-    [G.add_node(i, elev = 0.0) for i in range(7)]
+    [G.add_node(i, elevation = 0.0) for i in range(7)]
     edgeList = [(0,1,2.0), (1,2,2.0), (0,3,2.0), (3,4,1.0), (4,2,2.0), (0,5,3.0), (5,2,3.0), (0,6,4.0), (6,2,4.0)]
     G.add_weighted_edges_from(edgeList)
     elev = [0, 0, 0, 2, 2, 3, 4]
@@ -61,17 +61,21 @@ def test_shortest_path():
     highElev = 4.0
     highElevDist = 8.0
     x = 100 #in percentage
-    shortest_path = a_star(G, source, target, reconstruct = False)
-    assert getSum(G, nx.shortest_path(G, 0, 2, "weight") , "weight") == 4
-    assert getSum(G, shortest_path , "weight") == 4
+    # shortest_path = a_star(G, source, target, reconstruct = False)
+    # assert getSum(G, nx.shortest_path(G, 0, 2, "weight") , "weight") == 4
+    # assert getSum(G, shortest_path , "weight") == 4
 
-    assert (len(shortest_path) == 4)
-    path, distCost, ascent, descent = shortest_path()
-    assert isinstance(path, list)
-    assert isinstance(distCost, float)
-    assert isinstance(ascent, float)
-    assert isinstance(descent, float)
-    
+    # assert (len(shortest_path) == 4)
+    # path, distCost, ascent, descent = shortest_path()
+    # assert isinstance(path, list)
+    # assert isinstance(distCost, float)
+    # assert isinstance(ascent, float)
+    # assert isinstance(descent, float)
+    shortest_path = [[], 0.0, float('-inf'), 0.0]
+    dfs(G, source, target, shortest_path , 4, x = 1)
+    assert shortest_path[1] == highElevDist
+    assert shortest_path[2] == highElev
+
 @return_on_failure("")
 def test_create_geojson(location):
     json = create_geojson(location)

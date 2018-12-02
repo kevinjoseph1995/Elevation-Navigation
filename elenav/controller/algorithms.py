@@ -107,9 +107,10 @@ def a_star(G,start_location,end_location, reconstruct = True):
             gScore[neighbor]=tentative_gScore
             fScore[neighbor]=gScore[neighbor]# + G.nodes[neighbor]['dist_from_dest']
 
-def getCost(n1, n2, mode = "normal"):
+def getCost(G, n1, n2, mode = "normal"):
     if mode == "normal":
-        return G.edges[n1, n2 ,0]["length"]
+        try : return G.edges[n1, n2 ,0]["length"]
+        except : return G.edges[n1, n2]["weight"]
     elif mode == "elevation-diff":
 	    return G.nodes[n2]["elevation"] - G.nodes[n1]["elevation"]
     elif mode == "gain-only":
@@ -121,7 +122,7 @@ def getCost(n1, n2, mode = "normal"):
     
     #assert iisintace float, Create a graph and confirm edge length is what is expected.
 
-def dfs(G, start_location, currDist, currElevDist, path, descent, end_location, best, x = 0.0):
+def dfs(G, start_location, end_location, best, shortest, currDist = 0.0, currElevDist = 0.0, path = [], descent = 0.0, x = 0.0, visited = set()):
     """
     Returns the route(list of nodes) that maximizes absolute change in elevation between start and end using naive dfs
     Params:
@@ -141,16 +142,17 @@ def dfs(G, start_location, currDist, currElevDist, path, descent, end_location, 
         return
     
     if start_location == end_location:
-        if best[0] < currElevDist:
-            best = [path[:], currDist, currElevDist, descent]
+        if best[2] < currElevDist:
+            best[0], best[1], best[2], best[3] = path[:], currDist, currElevDist, descent
         return
     
     visited.add(start_location)
     
     for nei in G.neighbors(start_location):
         if nei not in visited:
-            dfs(nei, currDist + getCost(start_location, nei), currElevDist + getCost(start_location, nei, "elev"), \
-                path + [nei], descent + min(getCost(start_location, nei, "elevation-diff"), 0.0) end_location, best, x)
+            dfs(G, nei, end_location, best, shortest, currDist + getCost(G, start_location, nei), \
+            currElevDist + getCost(G, start_location, nei, "gain-only"), \
+            path + [nei], descent + min(getCost(G, start_location, nei, "elevation-diff"), 0.0), x, visited)
     
     visited.remove(start_location)
-    return best
+    return
