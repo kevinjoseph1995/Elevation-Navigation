@@ -3,7 +3,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 def create_elevation_profile(G,total_path):
-    elevation_profile=[G.node[route_node]['elevation'] for route_node in total_path]
+    elevation_profile = [G.node[route_node]['elevation'] for route_node in total_path]
     plt.figure()
     plt.title("Elevation Profile")
     plt.ylabel("Elevation (m)")
@@ -13,10 +13,10 @@ def create_elevation_profile(G,total_path):
     descent=0.0
     if len(total_path)>1:
         for i in range(1,len(total_path)):
-            if G.node[total_path[i]]['elevation']-G.node[total_path[i-1]]['elevation']>=0:
-                ascent+=G.node[total_path[i]]['elevation']-G.node[total_path[i-1]]['elevation']
+            if G.node[total_path[i]]['elevation']-G.node[total_path[i-1]]['elevation'] >= 0:
+                ascent += G.node[total_path[i]]['elevation']-G.node[total_path[i-1]]['elevation']
             else:
-                descent+=-(G.node[total_path[i]]['elevation']-G.node[total_path[i-1]]['elevation'])
+                descent += -(G.node[total_path[i]]['elevation']-G.node[total_path[i-1]]['elevation'])
 
     return ascent,descent
 
