@@ -16,7 +16,7 @@ class Model:
         else:
             self.init = False
 
-    def get_graph_with_elevation(self,bbox):
+    def get_graph_with_elevation(self, G):
         """
         Returns networkx graph G with eleveation data appended to each node and rise/fall grade to each edge.
 
@@ -25,7 +25,6 @@ class Model:
         Returns:
             G: networkx graph
         """
-        G = ox.graph_from_bbox(bbox[0],bbox[1],bbox[2],bbox[3],network_type='drive')        
         G = ox.add_node_elevations(G, api_key=self.GOOGLEAPIKEY)        
 
         return G
@@ -57,7 +56,7 @@ class Model:
             # bbox=self.get_bounding_box(start_location,end_location)
             # self.G = ox.graph_from_bbox(bbox[0],bbox[1],bbox[2],bbox[3],network_type='walk', simplify=False)
             self.G = ox.graph_from_point(start_location, distance=10000, simplify = True, network_type='walk')
-            self.G = self.get_graph_with_elevation(bbox)
+            self.G = self.get_graph_with_elevation(self. G)
             p.dump( self.G, open( "graph.p", "wb" ) )
             self.init = True
             print("Saved Graph")
