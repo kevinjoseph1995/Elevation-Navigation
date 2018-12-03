@@ -40,9 +40,9 @@ def test_shortest_path():
     #TESTING ALGO CORRECTNESS
     G = nx.Graph()
     [G.add_node(i, elevation = 0.0) for i in range(7)]
-    edgeList = [(0,1,2.0), (1,2,2.0), (0,3,2.0), (3,4,1.0), (4,2,2.0), (0,5,3.0), (5,2,3.0), (0,6,4.0), (6,2,4.0)]
+    edgeList = [(0,1,3.0), (1,2,3.0), (0,3,1.414), (3,4,4.0), (4,2,1.313), (0,5,4.24), (5,2,4.24), (0,6,5.0), (6,2,5.0)]
     G.add_weighted_edges_from(edgeList)
-    elev = [0, 0, 0, 2, 2, 3, 4]
+    elev = [0, 0, 0, 1, 1, 3, 4]
 
     for i, e in enumerate(elev):
         G.node[i]["elevation"] = e
@@ -57,10 +57,10 @@ def test_shortest_path():
 
     source = 0
     target = 2
-    shortestDist = 4.0
+    shortestDist = 6.0
     highElev = 4.0
-    highElevDist = 8.0
-    x = 100 #in percentage
+    highElevDist = 10.0
+    x = 100.0 #in percentage
     # shortest_path = a_star(G, source, target, reconstruct = False)
     # assert getSum(G, nx.shortest_path(G, 0, 2, "weight") , "weight") == 4
     # assert getSum(G, shortest_path , "weight") == 4
@@ -72,7 +72,7 @@ def test_shortest_path():
     # assert isinstance(ascent, float)
     # assert isinstance(descent, float)
     shortest_path = [[], 0.0, float('-inf'), 0.0]
-    dfs(G, source, target, shortest_path , 4, x = 1)
+    dfs(G, source, target, shortest_path, shortestDist, x = x)
     assert shortest_path[1] == highElevDist
     assert shortest_path[2] == highElev
 
