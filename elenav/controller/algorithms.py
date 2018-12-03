@@ -1,6 +1,8 @@
 import osmnx as ox
 import networkx as nx
+from heapq import *
 import matplotlib.pyplot as plt
+from collections import deque, defaultdict
 
 def create_elevation_profile(G,total_path):
     elevation_profile=[G.node[route_node]['elevation'] for route_node in total_path]
@@ -27,7 +29,6 @@ def create_elevation_profile(G,total_path):
 def sample_algorithm_format(G,start_location,end_location):
     # Should return (route(list of [(longs,lats)]), elevation gain,elevation drop
     pass
-
 
 def a_star(G,start_location,end_location, reconstruct = True):
     """
@@ -122,37 +123,53 @@ def getCost(G, n1, n2, mode = "normal"):
     
     #assert iisintace float, Create a graph and confirm edge length is what is expected.
 
-def dfs(G, start_location, end_location, best, shortest, currDist = 0.0, currElevDist = 0.0, path = [], descent = 0.0, x = 0.0, visited = set()):
-    """
-    Returns the route(list of nodes) that maximizes absolute change in elevation between start and end using naive dfs
-    Params:
-        G : graph
-        start_location: tuple (lat,long)
-        end_location: tuple (lat,long)
-        currDist : total distance travelled
-        currElevDist : total change in elevation (not considering drops)
-        path : path of nodes
-        descent : total sum of drops for the given path
-        best : list to keep track of best seen so far
-        x : threshold for distance
-        Returns:
-        lat_longs: [path, currDist, currElevDist , descent]
-    """
-    if currDist > shortest*(1.0+x):
-        return
+def dijkstra(G,start_location,end_location,x,min_max):
+    def printPath(parent, dest):
+        "returns the shortest path given a parent mapping and the final dest"
+        path = [dest]
+        curr = parent[dest]
+        while curr!=-1:
+            path.append(curr)
+            curr = parent[curr]
+        return path[::-1]
+    def dijkstra_internal(G, src, target, xPercent, shortest, mode="maximize"):
+        q, seen, mins = [(0.0, 0.0, src)], set(), {src: 0}
+        parent = defaultdict(int)
+        parent[src] = -1
+        while q:
+            currElevDist, currDist, node = heappop(q)
+            
+            if node not in seen:
+                seen.add(node)
+                if node == target:
+                    return currDist, currElevDist, parent
+
+                for nei in G.neighbors(node):
+                    if nei in seen: continue
+                    prev = mins.get(nei, None)
+                    length = getCost(G,node, nei,"normal")
+                    if mode == "maximize":
+                        #next = length/getCost(G,node, nei, "gain-only")
+                        #next = length - getCost(G,node, nei, "gain-only")
+                        # next = length
+                        next = (length + getCost(G,node, nei, "elevation-diff"))
+                    else:
+                        next = (length + getCost(G,node, nei, "elevation-diff"))*length 
+                        #next = length - getCost(G,node, nei, "drop-only")
+                    nextDist = currDist + length
+                    if nextDist < shortest*(1.0+xPercent) and (prev is None or next < prev):
+                        parent[nei] = node
+                        mins[nei] = next
+                        heappush(q, (next, nextDist, nei))        
+        return None, None, None
     
-    if start_location == end_location:
-        if best[2] < currElevDist:
-            best[0], best[1], best[2], best[3] = path[:], currDist, currElevDist, descent
-        return
+    start_node=ox.get_nearest_node(G, point=start_location)
+    end_node=ox.get_nearest_node(G, point=end_location)
+    shortest_route = nx.shortest_path(G, source=start_node, target=end_node, weight='length')
+    shortest_dist = sum(ox.get_route_edge_attributes(G, shortest_route, 'length'))
     
-    visited.add(start_location)
-    
-    for nei in G.neighbors(start_location):
-        if nei not in visited:
-            dfs(G, nei, end_location, best, shortest, currDist + getCost(G, start_location, nei), \
-            currElevDist + getCost(G, start_location, nei, "gain-only"), \
-            path + [nei], descent + min(getCost(G, start_location, nei, "elevation-diff"), 0.0), x, visited)
-    
-    visited.remove(start_location)
-    return
+    currDist, currElevDist, parent = dijkstra_internal(G,start_node,end_node, x, shortest_dist,min_max)
+    route = printPath(parent, end_node)
+    ele_latlong=[[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in route ] 
+    ascent,descent=create_elevation_profile(G,route)
+    return ele_latlong,ascent,descent

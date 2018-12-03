@@ -27,12 +27,13 @@ def create_geojson(coordinates):
 
     return geojson
 
-def create_data(start_location,end_location):
+def create_data(start_location,end_location,x,min_max):
     # Create a string with all the geo coordinates
     M=elenav.model.graph_model.Model()
-    G=M.get_graph(start_location,end_location)    
-    ele_latlong,ascent,descent =algorithms.a_star(G,start_location,end_location)    
-    
+    G=M.get_graph(start_location,end_location)
+
+    ele_latlong,ascent,descent=algorithms.dijkstra(G,start_location,end_location,x,min_max)
+
     data={"elevation_route":create_geojson(ele_latlong)   }  
     data["ascent"]=ascent
     data["descent"]=descent
@@ -51,5 +52,5 @@ def mapbox_gl_new():
 @app.route('/route',methods=['POST'])
 def get_route():    
     data=request.get_json(force=True)
-    route_data=create_data((data['start_location']['lat'],data['start_location']['lng']),(data['end_location']['lat'],data['end_location']['lng']))
+    route_data=create_data((data['start_location']['lat'],data['start_location']['lng']),(data['end_location']['lat'],data['end_location']['lng']),data['x'],data['min_max'])
     return json.dumps(route_data)

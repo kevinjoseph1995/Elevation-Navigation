@@ -102,6 +102,14 @@
             <div id='info'></div>
             <div id="start" class="text-subhead"> Start Location:0  </div> 
             <div id="end" class="text-subhead"> End Location:0  </div> 
+            <div id="check_box" class="text-subhead"> 
+                <input type="checkbox" name="skill" class="check" value="minimize" checked> Minimize Elevation
+                <input type="checkbox" name="skill" class="check" value="maximize"> Maximize Elevation
+            </div> 
+            <div id="check_box" class="text-subhead">
+            <label for="threshold" class="text-subhead">Path limit:x% of the shortest path</label>
+            <input type="number" id="x" min="0" name="threshold" class="text-subhead" 0 value=0 >   <br />
+            </div>
             <button id="reset" class="pure-material-button-contained">Reset</button>
             <button id="calc_route" class="pure-material-button-contained" disabled>Click start location.</button>
             <div id="ele_stats" class="text-subhead"> Elevation Statistics:  </div> 
@@ -114,11 +122,18 @@
         <div id="loading">
             <img id="loading-image" src= "/ajax-loader.gif" alt="Loading..." />
         </div>
+        
         <script>
             var start_flag=false;
             var end_flag=false;
             var start_loc="";
             var end_loc="";
+            var minimize_elevation=true;
+            $(document).ready(function(){
+                $('.check').click(function() {
+                    $('.check').not(this).prop('checked', false);
+                });
+            });
             mapboxgl.accessToken = '{{ ACCESS_KEY }}';
             var map = new mapboxgl.Map({
                 container: 'map',
@@ -275,7 +290,10 @@
 
             }
             document.getElementById('calc_route').onclick=function(){
-                var input_data='{"start_location":'+start_loc+',"end_location":'+end_loc+'}';
+                var checkedValue = $('.check:checked').val();  
+                console.log(document.getElementById('x').value) ;             
+                var input_data='{"start_location":'+start_loc+',"x":'+document.getElementById('x').value+',"end_location":'+end_loc+',"min_max":"'+checkedValue.toString()+'"}';                
+                // var input_data='{"start_location":'+start_loc+',"end_location":'+end_loc+'}';                
                 $('#loading').show();
                 $.ajax({
                     type: "POST",
@@ -342,9 +360,6 @@
             }
         });
         }
-
-                //
-                    
 
                    
         </script>
