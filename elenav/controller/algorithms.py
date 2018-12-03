@@ -162,7 +162,7 @@ def dijkstra(G,start_location,end_location,x,min_max):
     shortest_route = nx.shortest_path(G, source=start_node, target=end_node, weight='length')
     shortest_dist = sum(ox.get_route_edge_attributes(G, shortest_route, 'length'))
     
-    currDist, currElevDist, parent = dijkstra_internal(G,start_node,end_node, x, shortest_dist,min_max)
+    currDist, currElevDist, parent = dijkstra_internal(G,start_node,end_node, x/100, shortest_dist,min_max)
     route = printPath(parent, end_node)
     ele_latlong=[[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in route ] 
     ascent,descent=create_elevation_profile(G,route)
