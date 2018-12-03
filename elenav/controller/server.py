@@ -6,24 +6,24 @@ import elenav.controller.algorithms as algorithms
 import os
 import elenav.model
 
-app = Flask(__name__, static_url_path='', static_folder="../view/static",template_folder="../view/templates")
+app = Flask(__name__, static_url_path = '', static_folder = "../view/static", template_folder = "../view/templates")
 app.config.from_object(__name__)
 
 app.config.from_envvar('APP_CONFIG_FILE', silent=True)
 
-MAPBOX_ACCESS_KEY = app.config['MAPBOX_ACCESS_KEY']
+MAPBOX_ACCESS_KEY = 'pk.eyJ1Ijoia2V2aW5qb3NlcGgxOTk1IiwiYSI6ImNqbzUxc2kwaDAybm4zanRjdm9mbndqZW8ifQ.wdJv5gB84BWVy1dAoNN6ew'
 # Mapbox driving direction API call
 ROUTE_URL = "https://api.mapbox.com/directions/v5/mapbox/driving/{0}.json?access_token={1}&overview=full&geometries=geojson"
 
 
 
 def create_geojson(coordinates):
-    geojson={}
-    geojson["properties"]={}
-    geojson["type"]="Feature"
-    geojson["geometry"]={}
-    geojson["geometry"]["type"]="LineString"
-    geojson["geometry"]["coordinates"]=coordinates
+    geojson = {}
+    geojson["properties"] = {}
+    geojson["type"] = "Feature"
+    geojson["geometry"] = {}
+    geojson["geometry"]["type"] = "LineString"
+    geojson["geometry"]["coordinates"] = coordinates
 
     return geojson
 
@@ -51,6 +51,12 @@ def mapbox_gl_new():
 
 @app.route('/route',methods=['POST'])
 def get_route():    
+<<<<<<< HEAD
     data=request.get_json(force=True)
     route_data=create_data((data['start_location']['lat'],data['start_location']['lng']),(data['end_location']['lat'],data['end_location']['lng']),data['x'],data['min_max'])
+=======
+    data = request.get_json(force=True)
+    route_data = create_data((data['start_location']['lat'],data['start_location']['lng']),\
+                             (data['end_location']['lat'],data['end_location']['lng']))
+>>>>>>> 5c94b17350b404bb85563049c69190254bdf1283
     return json.dumps(route_data)

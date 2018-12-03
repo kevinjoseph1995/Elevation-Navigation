@@ -40,9 +40,9 @@ class Model:
         Returns:
             bbox: tuple (n,s,e,w)
         """
-        bbox1=ox.bbox_from_point(start_location, distance)
-        bbox2=ox.bbox_from_point(end_location, distance)
-        bbox=(max(bbox1[0],bbox2[0]),min(bbox1[1],bbox2[1]),max(bbox1[2],bbox2[2]),min(bbox1[3],bbox2[3]))
+        bbox1 = ox.bbox_from_point(start_location, distance)
+        bbox2 = ox.bbox_from_point(end_location, distance)
+        bbox = (max(bbox1[0],bbox2[0]),min(bbox1[1],bbox2[1]),max(bbox1[2],bbox2[2]),min(bbox1[3],bbox2[3]))
 
         return bbox
 
