@@ -51,12 +51,6 @@ def mapbox_gl_new():
 
 @app.route('/route',methods=['POST'])
 def get_route():    
-<<<<<<< HEAD
     data=request.get_json(force=True)
     route_data=create_data((data['start_location']['lat'],data['start_location']['lng']),(data['end_location']['lat'],data['end_location']['lng']),data['x'],data['min_max'])
-=======
-    data = request.get_json(force=True)
-    route_data = create_data((data['start_location']['lat'],data['start_location']['lng']),\
-                             (data['end_location']['lat'],data['end_location']['lng']))
->>>>>>> 5c94b17350b404bb85563049c69190254bdf1283
     return json.dumps(route_data)
