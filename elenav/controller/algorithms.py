@@ -198,14 +198,14 @@ def dijkstra(G, src, target, xPercent, shortest, weight = 1, mode="maximize"):
                     elif weight == 2:
                         next = (length - getCost(G,node, nei, "elevation-diff"))*length
                     elif weight == 3:
-                        next = (length - getCost(G,node, nei, "gain-only"))*length
+                        next = (length + getCost(G,node, nei, "drop-only"))
                 else:
                     if weight == 1:
-                        next = (length + getCost(G,node, nei, "elevation-diff"))*length 
-                    elif weight == 2:
                         next = (length + getCost(G,node, nei, "elevation-diff"))
+                    elif weight == 2:
+                        next = (length + getCost(G,node, nei, "elevation-diff"))*length 
                     else: 
-                        next = length + getCost(G,node, nei, "drop-only")
+                        next = length + getCost(G,node, nei, "gain-only")
                 next += customCost
                 nextDist = currDist + length
                 if nextDist < shortest*(1.0+xPercent) and (prev is None or next < prev):
