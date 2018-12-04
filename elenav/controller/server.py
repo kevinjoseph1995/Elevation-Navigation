@@ -27,16 +27,25 @@ def create_geojson(coordinates):
 
     return geojson
 
-def create_data(start_location,end_location,x,min_max):
+def create_data(start_location, end_location, x, min_max):
     # Create a string with all the geo coordinates
-    M=elenav.model.graph_model.Model()
-    G=M.get_graph(start_location,end_location)
+    M = elenav.model.graph_model.Model()
+    G = M.get_graph(start_location,end_location)
 
-    ele_latlong,ascent,descent=algorithms.dijkstra(G,start_location,end_location,x,min_max)
-
-    data={"elevation_route":create_geojson(ele_latlong)   }  
-    data["ascent"]=ascent
-    data["descent"]=descent
+    shortestPath, elevPath = algorithms.shortest_path(G, start_location, end_location, x, min_max)
+    if shortestPath is None:
+        return {}
+    if elevPath is None:
+        elevPath = shortestPath
+    
+    data = {"elevation_route" : create_geojson(elevPath[0]), "shortest_route" : create_geojson(shortestPath[0])}
+    data["shortDist"] = shortestPath[1]
+    data["elevDist"] = elevPath[2]
+    data["ascentShort"] = shortestPath[2]
+    data["descentShort"] = shortestPath[3]  
+    data["ascentElev"] = elevPath[2]
+    data["descentElev"] = elevPath[3]
+    
     return data
     
 @app.route('/mapbox_gl_new')
@@ -52,5 +61,5 @@ def mapbox_gl_new():
 @app.route('/route',methods=['POST'])
 def get_route():    
     data=request.get_json(force=True)
-    route_data=create_data((data['start_location']['lat'],data['start_location']['lng']),(data['end_location']['lat'],data['end_location']['lng']),data['x'],data['min_max'])
+    route_data = create_data((data['start_location']['lat'],data['start_location']['lng']),(data['end_location']['lat'],data['end_location']['lng']),data['x'],data['min_max'])
     return json.dumps(route_data)
