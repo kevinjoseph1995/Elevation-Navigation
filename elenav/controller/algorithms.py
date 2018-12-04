@@ -193,20 +193,20 @@ def dijkstra(G, src, target, xPercent, shortest, weight = 1, mode="maximize"):
                 length = getCost(G,node, nei,"normal")
                 
                 if mode == "maximize":
-                    if weight == 1:
+                    if weight[0] == 1:
                         next = (length - getCost(G,node, nei, "elevation-diff"))
-                    elif weight == 2:
+                    elif weight[0] == 2:
                         next = (length - getCost(G,node, nei, "elevation-diff"))*length
-                    elif weight == 3:
+                    elif weight[0] == 3:
                         next = (length + getCost(G,node, nei, "drop-only"))
                 else:
-                    if weight == 1:
+                    if weight[0] == 1:
                         next = (length + getCost(G,node, nei, "elevation-diff"))
-                    elif weight == 2:
+                    elif weight[0] == 2:
                         next = (length + getCost(G,node, nei, "elevation-diff"))*length 
                     else: 
                         next = length + getCost(G,node, nei, "gain-only")
-                next += customCost
+                if weight[1] : next += customCost
                 nextDist = currDist + length
                 if nextDist < shortest*(1.0+xPercent) and (prev is None or next < prev):
                     parent[nei] = node
@@ -218,7 +218,7 @@ def all_dijkstra(G, start_node, end_node, x, shortest_dist, mode = "maximize"):
     xi = x
     while xi < x + 4.0:
         best = [[], 0.0, float('-inf'), 0.0]
-        for weight in [1, 2, 3]:
+        for weight in [[1, 1], [2, 1], [3, 1], [1, 2], [2, 2], [3, 2]]:
             currDist, _, parent = dijkstra(G, start_node, end_node, x, shortest_dist, weight = weight, mode = mode)
             if not currDist : continue
             route = getRoute(parent, end_node)
