@@ -53,9 +53,10 @@ class Model:
         # bbox = self.get_bounding_box(start_location, end_location)
 
         if not self.init:
+            print("Loading Graph")
             # bbox=self.get_bounding_box(start_location,end_location)
             # self.G = ox.graph_from_bbox(bbox[0],bbox[1],bbox[2],bbox[3],network_type='walk', simplify=False)
-            self.G = ox.graph_from_point(start_location, distance=20000, simplify = True, network_type='walk')
+            self.G = ox.graph_from_point(start_location, distance=10000, simplify = True, network_type='walk')
             self.G = self.get_graph_with_elevation(self. G)            
             p.dump( self.G, open( "graph.p", "wb" ) )
             self.init = True
