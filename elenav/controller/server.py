@@ -41,6 +41,8 @@ def create_data(start_location, end_location, x, min_max):
         init = True
     
     shortestPath, elevPath = algorithms.shortest_path(start_location, end_location, x, mode = min_max)
+    
+    # print("==>server", shortestPath, elevPath)
     if shortestPath is None:
         return {}
     if elevPath is None:
