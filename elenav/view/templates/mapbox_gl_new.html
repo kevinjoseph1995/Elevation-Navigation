@@ -100,15 +100,15 @@
             <div id="weather" class="text-subhead"></div>
             <button id="geolocation" class="pure-material-button-contained" >Use Current Location</button>
             <div id='info'></div>
-            <div id="start" class="text-subhead"> Start Location:0  </div> 
-            <div id="end" class="text-subhead"> End Location:0  </div> 
+            <div id="start" class="text-subhead"> Start Location : 0  </div> 
+            <div id="end" class="text-subhead"> End Location : 0  </div> 
             <div id="check_box" class="text-subhead"> 
                 <input type="checkbox" name="skill" class="check" value="minimize" checked> Minimize Elevation
                 <input type="checkbox" name="skill" class="check" value="maximize"> Maximize Elevation
             </div> 
-            <div id="check_box" class="text-subhead">
-            <label for="threshold" class="text-subhead">Path limit:x% of the shortest path</label>
-            <input type="number" id="x" min="0" name="threshold" class="text-subhead" 0 value=0 >   <br />
+            <div id="check_box" class="text-subhead" style="display:flex; flex-direction: row; justify-content: center; align-items: center">
+            <label for="threshold" class="text-subhead">Path limit : x% of the shortest path &nbsp;&nbsp;</label>
+            <input type="number" id="x" min="0" name="threshold" class="text-subhead" 0 value=0 style="width: 80px;">   <br />
             </div>
             <button id="reset" class="pure-material-button-contained">Reset</button>
             <button id="calc_route" class="pure-material-button-contained" disabled>Click start location.</button>
@@ -134,12 +134,19 @@
                     $('.check').not(this).prop('checked', false);
                 });
             });
+
+            var bounds = [
+                [-122.363216, 37.782824],  // Northeast coordinates
+                [-122.393415, 37.799103] // Southwest coordinates
+            ];
+
             mapboxgl.accessToken = '{{ ACCESS_KEY }}';
             var map = new mapboxgl.Map({
                 container: 'map',
                 style: 'mapbox://styles/mapbox/streets-v9',
-                center: [-72.5199, 42.3732],
-                zoom: 12
+                center: [-122.440606, 37.788124],
+                zoom: 12,
+                // maxBounds: bounds
             });
             map.addControl(new mapboxgl.GeolocateControl({
                 positionOptions: {
@@ -179,8 +186,8 @@
                 
                 document.getElementById('info').innerHTML = 
                 '<br />' +                   
-                    "Latitude: "+e.lngLat["lat"]+ '<br />' +
-                    "Longitude: "+e.lngLat["lng"]+'<br />' ;
+                    "Latitude: "+e.lngLat["lat"].toFixed(4)+ ' | ' +
+                    "Longitude: "+e.lngLat["lng"].toFixed(4)+'<br />' ;
                     
                     
                 
@@ -227,8 +234,8 @@
                 }
             });
             document.getElementById('reset').onclick=function(){
-                document.getElementById('start').innerHTML ="Start Location:0";
-                document.getElementById('end').innerHTML ="End Location:0";
+                document.getElementById('start').innerHTML ="Start Location : 0";
+                document.getElementById('end').innerHTML ="End Location : 0";
                 document.getElementById('calc_route').innerHTML ="Click start location."
                 document.getElementById("calc_route").disabled = true;
                 start_loc="";
@@ -282,9 +289,14 @@
                     }
                 });
                 console.log("Routes Drawn"); 
-                document.getElementById('ele_stats').innerHTML="Elevation Statistics:"+ '<br />' +
-                                                                "Ascent: "+data["ascent"] + 'm<br />' +
-                                                                "Descent: "+data["descent"]+'m';
+                document.getElementById('ele_stats').innerHTML= "Elena:"+ ' | ' +
+                                                                "Gain: "+data["gainElenav"].toFixed(2) + 'm | ' +
+                                                                "Drop: "+data["dropElenav"].toFixed(2)+'m | ' + 
+                                                                "Dist: "+data["elenavDist"].toFixed(2) +'m<br/>' + 
+                                                                "Shor. :"+ ' | ' +
+                                                                "Gain: "+data["gainShort"].toFixed(2) + 'm | ' +
+                                                                "Drop: "+data["dropShort"].toFixed(2)+'m | ' +
+                                                                "Dist: "+data["shortDist"].toFixed(2) +'m';
                   
                 
 
@@ -307,7 +319,7 @@
                         var img = document.createElement("IMG");
                         img.id="eleimage"
                         img.src = "elevation_profile.png?"+ escape(new Date());
-                        img.style.width = '100%'; 
+                        img.style.width = '90%'; 
                         document.getElementById('eleProfile').appendChild(img);
                         
                     },
