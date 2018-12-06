@@ -4,7 +4,9 @@ from heapq import *
 import matplotlib.pyplot as plt
 from collections import deque, defaultdict
 
-def create_elevation_profile(G,total_path):
+def create_elevation_profile(G, total_path):
+    print("elevation")
+    # print(total_path, [G.node[route_node]['elevation'] for route_node in total_path])
     elevation_profile = [G.node[route_node]['elevation'] for route_node in total_path]
     plt.figure()
     plt.title("Elevation Profile")
@@ -14,13 +16,13 @@ def create_elevation_profile(G,total_path):
     return None
 
 
-def a_star(G, start_location, end_location, mode, reconstruct = True):
+def a_star(G, start_node, end_node, shortest, best, x, mode):
     """
     Returns the route(list of nodes) that minimize change in elevation between start and end using the A* node, with the heuristic 
     being the distance from the end node. 
     Params:
-        start_location: node id
-        end_location: node id
+        start_node: source node id
+        end_node: target node id
         Returns:
         lat_longs: List of [lon,lat] in the route
     """
@@ -35,9 +37,12 @@ def a_star(G, start_location, end_location, mode, reconstruct = True):
         while current in cameFrom:
             current = cameFrom[current]
             total_path.append(current)
-        ele_latlong=[[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in total_path ] 
-        ascent,descent=create_elevation_profile(G,total_path)
-        return ele_latlong,ascent,descent    
+        best[0] = total_path[:]
+        best[1] = computeElevs(G, total_path, "normal")[0]
+        best[2] = computeElevs(G, total_path, "gain-only")[0]
+        best[3] = computeElevs(G, total_path, "drop-only")[0]
+        
+        return
         
     
     #The settotal_path of nodes already evaluated
@@ -63,20 +68,18 @@ def a_star(G, start_location, end_location, mode, reconstruct = True):
     # For the first node, that value is completely heuristic.
     fScore[start_node] = 0#G.nodes[start_node]['dist_from_dest']
 
-    
-
     while openSet!={}:
         current= min([(node,fScore[node]) for node in openSet],key=lambda t: t[1]) [0]            
         if current==end_node:
-            return reconstruct_path(cameFrom, current)
+            reconstruct_path(cameFrom, current)
+            return
         openSet.remove(current)
         closedSet.add(current)
-
         for neighbor in G.neighbors(current):
             if neighbor in closedSet:
                 continue # Ignore the neighbor which is already evaluated.
             #The distance from start to a neighbor
-            tentative_gScore= gScore[current]+abs(G.nodes[current]['elevation'] - G.nodes[neighbor]['elevation'])
+            tentative_gScore= gScore[current]+ getCost(G, current, neighbor, "drop-only")
             if neighbor not in openSet:# Discover a new node
                 openSet.add(neighbor)
             else:
@@ -85,6 +88,8 @@ def a_star(G, start_location, end_location, mode, reconstruct = True):
             cameFrom[neighbor]=current
             gScore[neighbor]=tentative_gScore
             fScore[neighbor]=gScore[neighbor]# + G.nodes[neighbor]['dist_from_dest']
+    
+
 
 def getCost(G, n1, n2, mode = "normal"):
     if mode == "normal":
@@ -100,13 +105,13 @@ def getCost(G, n1, n2, mode = "normal"):
         return abs(G.nodes[n1]["elevation"] - G.nodes[n2]["elevation"])
     
 
-def dfs(G, start_location, end_location, best, shortest, currDist = 0.0, currElevDist = 0.0, path = [], descent = 0.0, x = 0.0, visited = set(), mode = "maximize"):
+def dfs(G, start_node, end_node, best, shortest, currDist = 0.0, currElevDist = 0.0, path = [], descent = 0.0, x = 0.0, visited = set(), mode = "maximize"):
     """
     Returns the route(list of nodes) that maximizes absolute change in elevation between start and end using naive dfs
     Params:
         G : graph
-        start_location: tuple (lat,long)
-        end_location: tuple (lat,long)
+        start_node: tuple (lat,long)
+        end_node: tuple (lat,long)
         currDist : total distance travelled
         currElevDist : total change in elevation (not considering drops)
         path : path of nodes
@@ -119,22 +124,22 @@ def dfs(G, start_location, end_location, best, shortest, currDist = 0.0, currEle
     if currDist > shortest*(1.0+x):
         return
     
-    if start_location == end_location:
+    if start_node == end_node:
         if mode == "maximize" and best[2] < currElevDist:
             best[0], best[1], best[2], best[3] = path[:], currDist, currElevDist, descent
         elif mode == "minimize" and best[3] < descent:
             best[0], best[1], best[2], best[3] = path[:], currDist, currElevDist, descent
         return
     
-    visited.add(start_location)
+    visited.add(start_node)
     
-    for nei in G.neighbors(start_location):
+    for nei in G.neighbors(start_node):
         if nei not in visited:
-            dfs(G, nei, end_location, best, shortest, currDist + getCost(G, start_location, nei), \
-            currElevDist + getCost(G, start_location, nei, "gain-only"), \
-            path + [nei], descent + min(getCost(G, start_location, nei, "elevation-diff"), 0.0), x, visited)
+            dfs(G, nei, end_node, best, shortest, currDist + getCost(G, start_node, nei), \
+            currElevDist + getCost(G, start_node, nei, "gain-only"), \
+            path + [nei], descent + min(getCost(G, start_node, nei, "elevation-diff"), 0.0), x, visited)
     
-    visited.remove(start_location)
+    visited.remove(start_node)
     return
 
 def computeElevs(G, route, mode = "both"):
@@ -147,7 +152,8 @@ def computeElevs(G, route, mode = "both"):
             diff = getCost(G, route[i],route[i+1],"gain-only")
         elif mode == "drop-only":
             diff = getCost(G, route[i],route[i+1],"drop-only")
-        
+        elif mode == "normal":
+            diff = getCost(G, route[i],route[i+1],"normal")
         total += diff
         piecewiseElevs.append(diff)
     return total, piecewiseElevs
@@ -220,7 +226,7 @@ def all_dijkstra(G, start_node, end_node, x, shortest_dist, mode = "maximize"):
         xi += 0.4
     return best
 
-def shortest_path(G, start_location, end_location, x, algo = "dijkstra", mode = "maximize"):
+def shortest_path(G, start_location, end_location, x, algo = "astar", mode = "maximize"):
     
     #get shortest path
     start_node, d1 = ox.get_nearest_node(G, point=start_location, return_dist = True)
@@ -231,14 +237,17 @@ def shortest_path(G, start_location, end_location, x, algo = "dijkstra", mode = 
 
     shortest_route = nx.shortest_path(G, source=start_node, target=end_node, weight='length')
     shortest_dist = sum(ox.get_route_edge_attributes(G, shortest_route, 'length'))
-          #[path, totalDist, totalElevGain, totalElevDrop]
-    
+          
+    #[path, totalDist, totalElevGain, totalElevDrop]
     best = [[], 0.0, float('-inf'), 0.0]
     if algo == "dfs":
+        print("dfs")
         dfs(G, start_node, end_node, best, shortestDist, x = x, mode = mode)
     elif algo == "astar":
-        a_star(G, start_location, end_location, best, mode)
+        print("astar")
+        a_star(G, start_node, end_node, best, mode)
     else:
+        print("dijkstra")
         best = all_dijkstra(G, start_node, end_node, x, shortest_dist, mode = mode)
 
     shortest_route_latlong = [[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in shortest_route] 
@@ -247,8 +256,9 @@ def shortest_path(G, start_location, end_location, x, algo = "dijkstra", mode = 
     
     if best[2] == float('-inf'):
         return shortestPathStats, None
-
+    
     create_elevation_profile(G, best[0])
+    print(best)
     best[0] = [[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in best[0]] 
     # print(shortestPathStats, best)
     return shortestPathStats, best
