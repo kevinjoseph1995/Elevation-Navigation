@@ -11,21 +11,8 @@ def create_elevation_profile(G,total_path):
     plt.ylabel("Elevation (m)")
     plt.plot(elevation_profile,color='black')
     plt.savefig('./elenav/view/static/elevation_profile.png')
-    ascent=0.0
-    descent=0.0
-    if len(total_path)>1:
-        for i in range(1,len(total_path)):
-            if G.node[total_path[i]]['elevation']-G.node[total_path[i-1]]['elevation'] >= 0:
-                ascent += G.node[total_path[i]]['elevation']-G.node[total_path[i-1]]['elevation']
-            else:
-                descent += -(G.node[total_path[i]]['elevation']-G.node[total_path[i-1]]['elevation'])
+    return None
 
-    return ascent, descent
-
-
-def sample_algorithm_format(G, start_location, end_location):
-    # Should return (route(list of [(longs,lats)]), elevation gain,elevation drop
-    pass
 
 def a_star(G, start_location, end_location, mode, reconstruct = True):
     """
@@ -106,13 +93,12 @@ def getCost(G, n1, n2, mode = "normal"):
     elif mode == "elevation-diff":
 	    return G.nodes[n2]["elevation"] - G.nodes[n1]["elevation"]
     elif mode == "gain-only":
-	    return max(0,G.nodes[n2]["elevation"] - G.nodes[n1]["elevation"])
+	    return max(0.0, G.nodes[n2]["elevation"] - G.nodes[n1]["elevation"])
     elif mode == "drop-only":
-	    return max(0,G.nodes[n1]["elevation"] - G.nodes[n2]["elevation"])
+	    return max(0.0, G.nodes[n1]["elevation"] - G.nodes[n2]["elevation"])
     else:
         return abs(G.nodes[n1]["elevation"] - G.nodes[n2]["elevation"])
     
-    #assert iisintace float, Create a graph and confirm edge length is what is expected.
 
 def dfs(G, start_location, end_location, best, shortest, currDist = 0.0, currElevDist = 0.0, path = [], descent = 0.0, x = 0.0, visited = set(), mode = "maximize"):
     """
@@ -167,7 +153,7 @@ def computeElevs(G, route, mode = "both"):
     return total, piecewiseElevs
 
 def getRoute(parent, dest):
-    "returns the shortest path given a parent mapping and the final dest"
+    "returns the path given a parent mapping and the final dest"
     path = [dest]
     curr = parent[dest]
     while curr!=-1:
@@ -262,8 +248,7 @@ def shortest_path(G, start_location, end_location, x, algo = "dijkstra", mode = 
     if best[2] == float('-inf'):
         return shortestPathStats, None
 
-    ascent, descent = create_elevation_profile(G, best[0])
+    create_elevation_profile(G, best[0])
     best[0] = [[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in best[0]] 
     # print(shortestPathStats, best)
     return shortestPathStats, best
-    # return ele_latlong, ascent, descent
