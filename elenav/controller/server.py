@@ -3,8 +3,7 @@ from flask import Flask, request, session, g, redirect, \
     url_for, abort, render_template, flash,jsonify
 import requests
 import json
-# import elenav.controller.algorithms as algorithms
-from elenav.controller.algoClass import Algorithms
+from elenav.controller.algorithms import Algorithms
 from elenav.model.graph_model import Model
 
 
