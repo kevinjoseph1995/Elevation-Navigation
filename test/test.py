@@ -6,6 +6,7 @@ from elenav.controller.settings import *
 from elenav.controller.algorithms import *
 from elenav.controller.server import create_geojson, create_data
 from elenav.model.graph_model import *
+import pickle as p
 
 def return_on_failure(value = ""):
     def decorate(f):
@@ -35,29 +36,38 @@ def test_get_graph(start, end):
     assert isinstance(G, nx.classes.multidigraph.MultiDiGraph)
 
 @return_on_failure("")
-def test_shortest_path(G):
+def test_shortest_path(A):
     
     #TESTING ALGO CORRECTNESS
-
-    def getSum(G, route, attribute):
-
-        attribute_values = []
-        for u, v in zip(route[:-1], route[1:]):
-            data = G.get_edge_data(u, v)[attribute]
-            attribute_values.append(data)
-        return sum(attribute_values)
-
     source = 0
     target = 2
     shortestDist = 6.0
-    highElev = 4.0
-    highElevDist = 10.0
     x = 100.0 #in percentage
     
-    shortest_path = [[], 0.0, float('-inf'), 0.0]
-    dfs(G, source, target, shortest_path, shortestDist, x = x)
-    assert shortest_path[1] == highElevDist
-    assert shortest_path[2] == highElev
+    A.start_node, A.end_node = 0, 0
+    A.shortest_dist = 6.0
+    A.x = x/100.0
+    A.dfs(source, target)
+    assert A.best[1] == 10.0
+    assert A.best[2] == 4.0
+    assert A.best[3] == 4.0
+    
+    
+    A.reload_graph(p.load(open("graph.p", "rb")))
+    start_location, end_location = (8.461506, 26.306319), (14.657997, 3.113339)
+    sPath, elenavPath = A.shortest_path(start_location, end_location, x, mode = "maximize", log = False)
+    assert sPath == None
+    assert elenavPath == None
+    
+    sPath, elenavPath = A.shortest_path(start_location, end_location, x, mode = "minimize", log = False)
+    assert sPath == None
+    assert elenavPath == None
+    
+    start_location, end_location = (37.788838, -122.463408), (37.748772, -122.436081)
+    sPath, elenavPath = A.shortest_path(start_location, end_location, x, mode = "maximize", log = False)
+    assert sPath[1] == 6340.941999999999
+    assert elenavPath[1] <= (1 + x/100.0)*6340.941999999999
+
 
 @return_on_failure("")
 def test_create_geojson(location):
@@ -71,60 +81,64 @@ def test_create_data(start, end, x = 0, min_max = "maximize"):
     assert isinstance(d, dict)
 
 @return_on_failure("")
-def test_getCost(G, n1 = 0, n2 = 1):
+def test_getCost(A, n1 = 0, n2 = 1):
     
-    c = getCost(G, 0, 1, mode = "normal")
+    c = A.getCost(0, 1, mode = "normal")
     assert isinstance(c, float)
     assert c == 3.0
     
-    c = getCost(G, 0, 3, mode = "elevation-diff")
+    c = A.getCost(0, 3, mode = "elevation-diff")
     assert isinstance(c, float)
     assert c == 1.0
     
-    c = getCost(G, 0, 3, mode = "gain-only")
+    c = A.getCost(0, 3, mode = "gain-only")
     assert isinstance(c, float)
     assert c == 1.0
     
-    c = getCost(G, 6, 2, mode = "drop-only")
+    c = A.getCost(6, 2, mode = "drop-only")
     assert isinstance(c, float)
     assert c == 4.0
     
-    c = getCost(G, 2, 6, mode = "drop-only")
+    c = A.getCost(2, 6, mode = "drop-only")
     assert isinstance(c, float)
     assert c == 0.0
 
-    c = getCost(G, 2, 6, mode = "abs")
+    c = A.getCost(2, 6, mode = "abs")
     assert isinstance(c, float)
     assert c == 4.0
 
-    c = getCost(G, 6, 2, mode = "abs")
+    c = A.getCost(6, 2, mode = "abs")
     assert isinstance(c, float)
     assert c == 4.0
 
 @return_on_failure("")
-def test_computeElevs(G):
+def test_computeElevs(A):
     route = [0, 6, 2]
-    c, p = computeElevs(G, route, mode = "both")
+    c, p = A.computeElevs(route, mode = "both", piecewise = True)
     assert isinstance(c, float)
     assert isinstance(p, list)
     assert c == 0.0
     assert p == [4.0, -4.0]
 
-    c, p = computeElevs(G, route, mode = "gain-only")
+    c = A.computeElevs(route, mode = "both")
+    assert isinstance(c, float)
+    assert c == 0.0
+
+    c, p = A.computeElevs(route, mode = "gain-only", piecewise = True)
     assert isinstance(c, float)
     assert isinstance(p, list)
     assert c == 4.0
     assert p == [4.0, 0.0]
 
-    c, p = computeElevs(G, route, mode = "drop-only")
+    c, p = A.computeElevs(route, mode = "drop-only", piecewise = True)
     assert isinstance(c, float)
     assert isinstance(p, list)
     assert c == 4.0
     assert p == [0.0, 4.0]
 
 @return_on_failure("")
-def test_getRoute():
-    c = getRoute({0 : 1, 1 : 2, 2 : -1}, 0)
+def test_getRoute(A):
+    c = A.getRoute({0 : 1, 1 : 2, 2 : -1}, 0)
     assert isinstance(c, list)
     assert c == [2, 1, 0]
 
@@ -141,21 +155,22 @@ if __name__ == "__main__":
     for i, e in enumerate(elev):
         G.node[i]["elevation"] = e
     
-    A = Algorithms(G)
+    A = Algorithms(G, x = 0.0)
+    # A.shortest_path(start_location, end_location, x, algo = "dijkstra", mode = "maximize")
 
     print("====>Testing get_bounding_box")
     test_get_bounding_box(start, end)
     print("====>Testing get_graph")
     test_get_graph(start, end)
-    print("====>Testing get_shortest_path")
-    test_shortest_path(G)
     print("====>Testing create_geojson")
     test_create_geojson(start)
     print("====>Testing create_data")
     test_create_data(start, end)
     print("====>Testing getCost")
-    test_getCost(G)
+    test_getCost(A)
     print("====>Testing computeElevs")
-    test_computeElevs(G)
+    test_computeElevs(A)
     print("====>Testing getRoute")
-    test_getRoute()
+    test_getRoute(A)
+    print("====>Testing get_shortest_path")
+    test_shortest_path(A)
