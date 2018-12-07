@@ -88,7 +88,7 @@ class Algorithms:
 
         # For the first node, that value is completely heuristic.
         fScore[start_node] = 0#G.nodes[start_node]['dist_from_dest']
-        print("Shortest Distance:",shortest)
+        
         while len(openSet):
             current = min([(node,fScore[node]) for node in openSet], key=lambda t: t[1])[0]            
             if current == end_node:
