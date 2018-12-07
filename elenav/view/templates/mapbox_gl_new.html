@@ -242,8 +242,6 @@
                 start_loc="";
                 start_flag=false;
                 end_loc="";
-                points = turf.featureCollection([]);
-                map.getSource('circleData').setData(points);
                 m1.remove();
                 m2.remove();
                 end_flag=false;
@@ -267,8 +265,34 @@
                 while (temp_ele.firstChild) {
                     temp_ele.removeChild(temp_ele.firstChild);
                 }   
-                document.getElementById('ele_stats').innerHTML="Statistics :"; 
-            };
+                document.getElementById('ele_stats').innerHTML="Elevation Statistics:";
+
+            }
+            function calc_route_reset()
+            {
+                
+                if (map.getLayer("shortest_route")){
+                    map.removeLayer("shortest_route");
+                }
+
+                if (map.getSource("shortest_route")){
+                    map.removeSource("shortest_route");
+                }
+                if (map.getLayer("ele_route")){
+                    map.removeLayer("ele_route");
+                }
+
+                if (map.getSource("ele_route")){
+                    map.removeSource("ele_route");
+                }
+                var temp_ele = document.getElementById("eleProfile");
+                while (temp_ele.firstChild) {
+                    temp_ele.removeChild(temp_ele.firstChild);
+                }   
+                document.getElementById('ele_stats').innerHTML="Elevation Statistics:";
+
+            }
+            document.getElementById('reset').onclick=reset;
             function handleData(data)
             {
                                             
