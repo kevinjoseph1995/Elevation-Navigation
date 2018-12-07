@@ -95,7 +95,7 @@ class Algorithms:
                 if nei in closedSet:
                     continue # Ignore the neighbor which is already evaluated.
                 #The distance from start to a neighbor
-                tentative_gScore = gScore[current] + self.getCost(current, nei, "drop-only")
+                tentative_gScore = gScore[current] + self.getCost(current, nei, "gain-only")
                 if nei not in openSet:# Discover a new node
                     openSet.add(nei)
                 else:
@@ -285,15 +285,12 @@ class Algorithms:
         
         if algo == "dfs":
             print("dfs")
-            self.dfs(self.start_node, self.end_node)
-        
+            self.dfs(self.start_node, self.end_nodemaximize)        
         elif algo == "astar" or mode == "minimize":
             print("astar")
-            # self.a_star()
-        print(self.best[1:])
+            self.a_star()        
         print("dijkstra")
-        self.all_dijkstra()
-        print(self.best[1:])
+        self.all_dijkstra()       
         shortest_route_latlong = [[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in self.shortest_route] 
         shortestPathStats = [shortest_route_latlong, self.shortest_dist, \
                             self.computeElevs(self.shortest_route, "gain-only"), self.computeElevs(self.shortest_route, "drop-only")]
