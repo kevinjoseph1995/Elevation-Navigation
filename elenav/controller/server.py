@@ -42,17 +42,17 @@ def create_data(start_location, end_location, x, min_max):
     
     shortestPath, elevPath = algorithms.shortest_path(start_location, end_location, x, mode = min_max)
     
-    # print("==>server", shortestPath, elevPath)
+    
     if shortestPath is None:
         return {}
     if elevPath is None:
         elevPath = shortestPath
-    
+    print("==>server", elevPath[1:])
     data = {"elevation_route" : create_geojson(elevPath[0]), "shortest_route" : create_geojson(shortestPath[0])}
     data["shortDist"] = shortestPath[1]
     data["gainShort"] = shortestPath[2]
     data["dropShort"] = shortestPath[3]  
-    data["elenavDist"]  = elevPath[1]
+    data["elenavDist"] = elevPath[1]
     data["gainElenav"] = elevPath[2]
     data["dropElenav"] = elevPath[3]
     

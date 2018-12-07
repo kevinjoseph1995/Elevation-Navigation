@@ -131,7 +131,7 @@ def test_getRoute():
 
 if __name__ == "__main__":
     start, end = (42.373222, -72.519852), (42.375544, -72.524210)
-
+    
     G = nx.Graph()
     [G.add_node(i, elevation = 0.0) for i in range(7)]
     edgeList = [(0,1,3.0), (1,2,3.0), (0,3,1.414), (3,4,4.0), (4,2,1.313), (0,5,4.24), (5,2,4.24), (0,6,5.0), (6,2,5.0)]
@@ -141,6 +141,8 @@ if __name__ == "__main__":
     for i, e in enumerate(elev):
         G.node[i]["elevation"] = e
     
+    A = Algorithms(G)
+
     print("====>Testing get_bounding_box")
     test_get_bounding_box(start, end)
     print("====>Testing get_graph")

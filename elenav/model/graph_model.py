@@ -26,7 +26,6 @@ class Model:
             G: networkx graph
         """
         G = ox.add_node_elevations(G, api_key=self.GOOGLEAPIKEY)        
-
         return G
     
     def get_bounding_box(self,start_location,end_location,distance=2000):
