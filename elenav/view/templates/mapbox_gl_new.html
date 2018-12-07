@@ -262,7 +262,7 @@
             function handleData(data)
             {
                                             
-                
+                console.log(data["elevation_route"])
                 map.addSource("ele_route", {
                     "type": "geojson",
                     "data": data["elevation_route"]
@@ -283,8 +283,8 @@
                 });
                 console.log("Routes Drawn"); 
                 document.getElementById('ele_stats').innerHTML="Elevation Statistics:"+ '<br />' +
-                                                                "Ascent: "+data["ascent"] + 'm<br />' +
-                                                                "Descent: "+data["descent"]+'m';
+                                                                "Ascent: "+data["ascentElev"] + 'm<br />' +
+                                                                "Descent: "+data["descentElev"]+'m';
                   
                 
 

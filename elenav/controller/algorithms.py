@@ -4,23 +4,14 @@ from heapq import *
 import matplotlib.pyplot as plt
 from collections import deque, defaultdict
 
-def create_elevation_profile(G,total_path):
+def create_elevation_profile(G,total_path):    
     elevation_profile = [G.node[route_node]['elevation'] for route_node in total_path]
     plt.figure()
     plt.title("Elevation Profile")
     plt.ylabel("Elevation (m)")
     plt.plot(elevation_profile,color='black')
-    plt.savefig('./elenav/view/static/elevation_profile.png')
-    ascent=0.0
-    descent=0.0
-    if len(total_path)>1:
-        for i in range(1,len(total_path)):
-            if G.node[total_path[i]]['elevation']-G.node[total_path[i-1]]['elevation'] >= 0:
-                ascent += G.node[total_path[i]]['elevation']-G.node[total_path[i-1]]['elevation']
-            else:
-                descent += -(G.node[total_path[i]]['elevation']-G.node[total_path[i-1]]['elevation'])
-
-    return ascent, descent
+    plt.savefig('./elenav/view/static/elevation_profile.png')   
+    return 
 
 
 def sample_algorithm_format(G, start_location, end_location):
@@ -49,7 +40,7 @@ def a_star(G, start_location, end_location, mode, reconstruct = True):
             current = cameFrom[current]
             total_path.append(current)
         ele_latlong=[[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in total_path ] 
-        ascent,descent=create_elevation_profile(G,total_path)
+        create_elevation_profile(G,total_path)
         return ele_latlong,ascent,descent    
         
     
@@ -234,14 +225,14 @@ def all_dijkstra(G, start_node, end_node, x, shortest_dist, mode = "maximize"):
         xi += 0.4
     return best
 
-def shortest_path(G, start_location, end_location, x, algo = "dijkstra", mode = "maximize"):
+def get_routes(G, start_location, end_location, x, algo = "dijkstra", mode = "maximize"):
     
     #get shortest path
     start_node, d1 = ox.get_nearest_node(G, point=start_location, return_dist = True)
     end_node, d2 = ox.get_nearest_node(G, point=end_location, return_dist = True)
-    if d1 > 100 or d2 > 100:
-        print("Nothing")
-        return None, None
+    # if d1 > 100 or d2 > 100:
+    #     print("Nothing")
+    #     return None, None
 
     shortest_route = nx.shortest_path(G, source=start_node, target=end_node, weight='length')
     shortest_dist = sum(ox.get_route_edge_attributes(G, shortest_route, 'length'))
@@ -249,7 +240,7 @@ def shortest_path(G, start_location, end_location, x, algo = "dijkstra", mode = 
     
     best = [[], 0.0, float('-inf'), 0.0]
     if algo == "dfs":
-        dfs(G, start_node, end_node, best, shortestDist, x = x, mode = mode)
+        dfs(G, start_node, end_node, best, shortest_dist, x = x, mode = mode)
     elif algo == "astar":
         a_star(G, start_location, end_location, best, mode)
     else:
@@ -262,7 +253,7 @@ def shortest_path(G, start_location, end_location, x, algo = "dijkstra", mode = 
     if best[2] == float('-inf'):
         return shortestPathStats, None
 
-    ascent, descent = create_elevation_profile(G, best[0])
+    create_elevation_profile(G,best[0])    
     best[0] = [[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in best[0]] 
     # print(shortestPathStats, best)
     return shortestPathStats, best

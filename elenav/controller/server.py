@@ -32,7 +32,7 @@ def create_data(start_location, end_location, x, min_max):
     M = elenav.model.graph_model.Model()
     G = M.get_graph(start_location,end_location)
 
-    shortestPath, elevPath = algorithms.shortest_path(G, start_location, end_location, x, min_max)
+    shortestPath, elevPath = algorithms.get_routes(G, start_location, end_location, x, min_max)
     if shortestPath is None:
         return {}
     if elevPath is None:
@@ -44,7 +44,7 @@ def create_data(start_location, end_location, x, min_max):
     data["ascentShort"] = shortestPath[2]
     data["descentShort"] = shortestPath[3]  
     data["ascentElev"] = elevPath[2]
-    data["descentElev"] = elevPath[3]
+    data["descentElev"] = elevPath[3]    
     
     return data
     
