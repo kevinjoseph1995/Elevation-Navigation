@@ -16,13 +16,11 @@ class Algorithms:
         if len(self.best[0]) == 0 : return
         G = self.G
         print("elevation")
-        elevation_profile_elenav = [G.node[route_node]['elevation'] for route_node in self.best[0]]
-        # elevation_profile_short = [G.node[route_node]['elevation'] for route_node in self.shortest_route]
+        elevation_profile = [G.node[route_node]['elevation'] for route_node in self.best[0]]
         plt.figure()
         plt.title("Elevation Profile")
         plt.ylabel("Elevation (m)")
-        plt.plot(elevation_profile_elenav,color='black')
-        # plt.plot(elevation_profile_short,color='blue')
+        plt.plot(elevation_profile,color='black')
         plt.savefig('./elenav/view/static/elevation_profile.png')
         return
 
@@ -36,6 +34,7 @@ class Algorithms:
         Function to retrace the path from end node to start node. Returns in the format required by Mapbox API(for plotting)
         """
         if not cameFrom or not current : return
+        G = self.G
         total_path = [current]
         while current in cameFrom:
             current = cameFrom[current]
@@ -95,11 +94,11 @@ class Algorithms:
                 if nei in closedSet:
                     continue # Ignore the neighbor which is already evaluated.
                 #The distance from start to a neighbor
-                tentative_gScore = gScore[current] + self.getCost(current, nei, "gain-only")
+                tentative_gScore = gScore[current] + self.getCost(current, nei, "drop-only")
                 if nei not in openSet:# Discover a new node
                     openSet.add(nei)
                 else:
-                    if tentative_gScore > (1+x)*shortest :#Stop searching along this path if distance exceed 1.5 times shortest path
+                    if tentative_gScore >= gScore[nei] :#Stop searching along this path if distance exceed 1.5 times shortest path
                         continue # This is not a better path.
                 
                 cameFrom[nei] = current
@@ -190,7 +189,7 @@ class Algorithms:
             curr = parent[curr]
         return path[::-1]
 
-    def dijkstra(self, weight):
+    def dijkstra(self, weight = 1):
         if not self.verify_nodes() : return
         G, x, shortest, mode = self.G, self.x, self.shortest_dist, self.mode
         start_node, end_node = self.start_node, self.end_node
@@ -235,31 +234,31 @@ class Algorithms:
         return None, None, None
 
     def all_dijkstra(self):
-        # xi = self.x
+        xi = self.x
         if not self.verify_nodes() : return
         start_node, end_node = self.start_node, self.end_node
         
         
-        # while xi <= self.x:
+        while xi < self.x + 4.0:
             
-        for weight in [[1, True], [2, True], [3, True], [1, False], [2, False], [3, False]]:
-            _, currDist, parent = self.dijkstra(weight)
+            for weight in [[1, 1], [2, 1], [3, 1], [1, 2], [2, 2], [3, 2]]:
+                _, currDist, parent = self.dijkstra(weight = weight)
+                
+                if not currDist : continue
+                
+                route = self.getRoute(parent, end_node)
+                elevDist, dropDist = self.computeElevs(route, "gain-only"), self.computeElevs(route, "drop-only")
+                
+                if self.mode == "maximize":
+                    if (elevDist > self.best[2]) or (elevDist == self.best[2] and currDist < self.best[1]):
+                        self.best = [route[:], currDist, elevDist, dropDist]
+                else:
+                    if (dropDist > self.best[2]) or (dropDist == self.best[2] and currDist < self.best[1]):
+                        self.best = [route[:], currDist,  elevDist, dropDist]
             
-            if not currDist : continue
-            
-            route = self.getRoute(parent, end_node)
-            elevDist, dropDist = self.computeElevs(route, "gain-only"), self.computeElevs(route, "drop-only")
-            
-            if self.mode == "maximize":
-                if (elevDist > self.best[2]) or (elevDist == self.best[2] and currDist < self.best[1]):
-                    self.best = [route[:], currDist, elevDist, dropDist]
-            else:
-                if (dropDist > self.best[3]) or (dropDist == self.best[3] and currDist < self.best[1]):
-                    self.best = [route[:], currDist,  elevDist, dropDist]
-        
-            if (self.mode == "maximize" and self.best[2] != float('-inf')) or (self.mode == "minimize" and self.best[3] != float('-inf')):
+            if self.best[2] != float('-inf'):
                 break
-            # xi += 0.4
+            xi += 0.4
         
         return
 
@@ -270,36 +269,36 @@ class Algorithms:
         self.mode = mode
         self.start_node, self.end_node = None, None
                     #[path, totalDist, totalElevGain, totalElevDrop]
-        self.best = [[], 0.0, float('-inf'), float('-inf')]
-        print("===>", x, mode, self.best)
+        self.best = [[], 0.0, float('-inf'), 0.0]
         #get shortest path
         self.start_node, d1 = ox.get_nearest_node(G, point=start_location, return_dist = True)
-        self.end_node, d2   = ox.get_nearest_node(G, point=end_location, return_dist = True)
+        self.end_node, d2 = ox.get_nearest_node(G, point=end_location, return_dist = True)
         # if d1 > 100 or d2 > 100:
         #     print("Nothing")
         #     return None, None
 
         self.shortest_route = nx.shortest_path(G, source=self.start_node, target=self.end_node, weight='length')
-        self.shortest_dist  = sum(ox.get_route_edge_attributes(G, self.shortest_route, 'length'))
+        self.shortest_dist = sum(ox.get_route_edge_attributes(G, self.shortest_route, 'length'))
             
         
         if algo == "dfs":
             print("dfs")
-            self.dfs(self.start_node, self.end_nodemaximize)        
+            self.dfs(self.start_node, self.end_node)
         elif algo == "astar" or mode == "minimize":
             print("astar")
-            self.a_star()        
+            self.a_star()
+        
         print("dijkstra")
-        self.all_dijkstra()       
+        self.all_dijkstra()
+
         shortest_route_latlong = [[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in self.shortest_route] 
         shortestPathStats = [shortest_route_latlong, self.shortest_dist, \
                             self.computeElevs(self.shortest_route, "gain-only"), self.computeElevs(self.shortest_route, "drop-only")]
         
-        if (self.mode == "maximize" and self.best[2] == float('-inf')) or (self.mode == "minimize" and self.best[3] == float('-inf')):
+        if self.best[2] == float('-inf'):
             return shortestPathStats, None
         
         self.create_elevation_profile()
         # print(self.best)
         self.best[0] = [[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in self.best[0]] 
-        # print("===>end", self.best[1:])
         return shortestPathStats, self.best
