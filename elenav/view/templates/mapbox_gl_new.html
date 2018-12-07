@@ -241,6 +241,8 @@
                 start_loc="";
                 start_flag=false;
                 end_loc="";
+                points = turf.featureCollection([]);
+                map.getSource('circleData').setData(points);
                 m1.remove();
                 m2.remove();
                 end_flag=false;
@@ -264,7 +266,7 @@
                 while (temp_ele.firstChild) {
                     temp_ele.removeChild(temp_ele.firstChild);
                 }   
-                document.getElementById('ele_stats').innerHTML="Elevation Statistics:"; 
+                document.getElementById('ele_stats').innerHTML="Statistics :"; 
             };
             function handleData(data)
             {

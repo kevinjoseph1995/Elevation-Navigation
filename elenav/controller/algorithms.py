@@ -249,7 +249,7 @@ class Algorithms:
             
             route = self.getRoute(parent, end_node)
             elevDist, dropDist = self.computeElevs(route, "gain-only"), self.computeElevs(route, "drop-only")
-            
+            print(elevDist)
             if self.mode == "maximize":
                 if (elevDist > self.best[2]) or (elevDist == self.best[2] and currDist < self.best[1]):
                     self.best = [route[:], currDist, elevDist, dropDist]
@@ -257,8 +257,8 @@ class Algorithms:
                 if (dropDist > self.best[3]) or (dropDist == self.best[3] and currDist < self.best[1]):
                     self.best = [route[:], currDist,  elevDist, dropDist]
         
-            if (self.mode == "maximize" and self.best[2] != float('-inf')) or (self.mode == "minimize" and self.best[3] != float('-inf')):
-                break
+            # if (self.mode == "maximize" and self.best[2] != float('-inf')) or (self.mode == "minimize" and self.best[3] != float('-inf')):
+            #     break
             # xi += 0.4
         
         return
