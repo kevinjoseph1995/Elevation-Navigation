@@ -79,13 +79,19 @@ class Algorithms:
             gScore[node] = float("inf")
         #The cost of going from start to start is zero.
         gScore[start_node] = 0 
+
+        gScore1 = {}
+        for node in G.nodes():
+            gScore1[node] = float("inf")
+        #The cost of going from start to start is zero.
+        gScore1[start_node] = 0
         # For each node, the total cost of getting from the start node to the goal
         # by passing by that node. That value is partly known, partly heuristic.
         fScore = {}
 
         # For the first node, that value is completely heuristic.
         fScore[start_node] = 0#G.nodes[start_node]['dist_from_dest']
-
+        
         while len(openSet):
             current = min([(node,fScore[node]) for node in openSet], key=lambda t: t[1])[0]            
             if current == end_node:
@@ -99,14 +105,16 @@ class Algorithms:
                     continue # Ignore the neighbor which is already evaluated.
                 #The distance from start to a neighbor
                 tentative_gScore = gScore[current] + self.getCost(current, nei, "gain-only")
-                if nei not in openSet:# Discover a new node
+                tentative_gScore1 = gScore1[current] + self.getCost(current, nei, "normal")                
+                if nei not in openSet and tentative_gScore1<=(1+x)*shortest:# Discover a new node
                     openSet.add(nei)
                 else:
-                    if tentative_gScore >= (1+x)*shortest :#Stop searching along this path if distance exceed 1.5 times shortest path
+                    if tentative_gScore >= gScore[nei] or tentative_gScore1>=(1+x)*shortest:#Stop searching along this path if distance exceed 1.5 times shortest path
                         continue # This is not a better path.
                 
                 cameFrom[nei] = current
                 gScore[nei] = tentative_gScore
+                gScore1[nei] = tentative_gScore1
                 fScore[nei] = gScore[nei] # + G.nodes[neighbor]['dist_from_dest']
         
 
@@ -281,9 +289,11 @@ class Algorithms:
         if algo == "dfs":
             if log : print("dfs")
             self.dfs(self.start_node, self.end_node)        
+        
         elif algo == "astar":
             if log : print("astar")
             self.a_star()        
+        
         if log : print("dijkstra")
         self.all_dijkstra()       
         shortest_route_latlong = [[G.node[route_node]['x'],G.node[route_node]['y']] for route_node in self.shortest_route] 
