@@ -300,6 +300,7 @@
                     var temp=confirm("Selected locations do not have neighboring nodes in underlying graph.Please select different points.");
                     return;
                 }  
+                console.log(data["popup_flag"])
                 if (data["popup_flag"]==1)  
                 {
                     var temp=confirm("Could not find a path optimizing elevation for the given threshold (Plotting just the shortest path.).");

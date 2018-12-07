@@ -15,7 +15,7 @@ class Algorithms:
     def create_elevation_profile(self):
         if len(self.best[0]) == 0 : return
         G = self.G
-        print("elevation")
+        
         elevation_profile_elenav = [G.node[route_node]['elevation'] for route_node in self.best[0]]
         # elevation_profile_short = [G.node[route_node]['elevation'] for route_node in self.shortest_route]
         plt.figure()
@@ -246,8 +246,7 @@ class Algorithms:
             if not currDist : continue
             
             route = self.getRoute(parent, end_node)
-            elevDist, dropDist = self.computeElevs(route, "gain-only"), self.computeElevs(route, "drop-only")
-            print(elevDist, dropDist)
+            elevDist, dropDist = self.computeElevs(route, "gain-only"), self.computeElevs(route, "drop-only")            
             if self.mode == "maximize":
                 if (elevDist > self.best[2]) or (elevDist == self.best[2] and currDist < self.best[1]):
                     self.best = [route[:], currDist, elevDist, dropDist]
@@ -264,8 +263,7 @@ class Algorithms:
         self.mode = mode
         self.start_node, self.end_node = None, None
                     #[path, totalDist, totalElevGain, totalElevDrop]
-        self.best = [[], 0.0, float('-inf'), float('-inf')]
-        print("===>", x, mode, self.best)
+        self.best = [[], 0.0, float('-inf'), float('-inf')]        
         #get shortest path
         self.start_node, d1 = ox.get_nearest_node(G, point=start_location, return_dist = True)
         self.end_node, d2   = ox.get_nearest_node(G, point=end_location, return_dist = True)
@@ -289,7 +287,7 @@ class Algorithms:
         shortestPathStats = [shortest_route_latlong, self.shortest_dist, \
                             self.computeElevs(self.shortest_route, "gain-only"), self.computeElevs(self.shortest_route, "drop-only")]
         
-        if (self.mode == "maximize" and self.best[2] == float('-inf')) or (self.mode == "minimize" and self.best[3] == float('-inf')):
+        if (self.mode == "maximize" and self.best[2] == float('-inf')) or (self.mode == "minimize" and self.best[3] == float('-inf')):            
             return shortestPathStats, [[], 0.0, 0, 0]
         
         self.create_elevation_profile()
