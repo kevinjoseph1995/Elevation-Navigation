@@ -40,22 +40,29 @@ def create_data(start_location, end_location, x, min_max):
         algorithms = Algorithms(G, x = x, mode = min_max)
         init = True
     
-    shortestPath, elevPath = algorithms.shortest_path(start_location, end_location, x, mode = min_max)
+    shortestPath, elevPath = algorithms.shortest_path(start_location, end_location, x, mode = min_max)   
     
-    # print("==>server", shortestPath, elevPath)
-    if shortestPath is None:
-        return {}
-    if elevPath is None:
-        elevPath = shortestPath
-    
+    if shortestPath is None and elevPath is None:
+        data = {"elevation_route" : [] , "shortest_route" : []}        
+        data["shortDist"] = 0
+        data["gainShort"] = 0
+        data["dropShort"] = 0
+        data["elenavDist"]  = 0
+        data["gainElenav"] = 0
+        data["dropElenav"] = 0
+        data["popup_flag"] = 0 
+        return data
     data = {"elevation_route" : create_geojson(elevPath[0]), "shortest_route" : create_geojson(shortestPath[0])}
     data["shortDist"] = shortestPath[1]
     data["gainShort"] = shortestPath[2]
     data["dropShort"] = shortestPath[3]  
     data["elenavDist"]  = elevPath[1]
     data["gainElenav"] = elevPath[2]
-    data["dropElenav"] = elevPath[3]
-    
+    data["dropElenav"] = elevPath[3] 
+    if len(elevPath[0])==0:
+        data["popup_flag"] = 1        
+    else:
+        data["popup_flag"] = 2    
     return data
     
 @app.route('/mapbox_gl_new')

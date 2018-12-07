@@ -275,9 +275,9 @@ class Algorithms:
         #get shortest path
         self.start_node, d1 = ox.get_nearest_node(G, point=start_location, return_dist = True)
         self.end_node, d2   = ox.get_nearest_node(G, point=end_location, return_dist = True)
-        # if d1 > 100 or d2 > 100:
-        #     print("Nothing")
-        #     return None, None
+        if d1 > 100 or d2 > 100:
+            print("Nodes too far")
+            return None,None
 
         self.shortest_route = nx.shortest_path(G, source=self.start_node, target=self.end_node, weight='length')
         self.shortest_dist  = sum(ox.get_route_edge_attributes(G, self.shortest_route, 'length'))
@@ -285,8 +285,8 @@ class Algorithms:
         
         if algo == "dfs":
             print("dfs")
-            self.dfs(self.start_node, self.end_nodemaximize)        
-        elif algo == "astar" or mode == "minimize":
+            self.dfs(self.start_node, self.end_node)        
+        elif algo == "astar":
             print("astar")
             self.a_star()        
         print("dijkstra")
@@ -296,7 +296,7 @@ class Algorithms:
                             self.computeElevs(self.shortest_route, "gain-only"), self.computeElevs(self.shortest_route, "drop-only")]
         
         if (self.mode == "maximize" and self.best[2] == float('-inf')) or (self.mode == "minimize" and self.best[3] == float('-inf')):
-            return shortestPathStats, None
+            return shortestPathStats, [[], 0.0, 0, 0]
         
         self.create_elevation_profile()
         # print(self.best)

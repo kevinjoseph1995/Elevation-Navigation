@@ -294,8 +294,17 @@
             }
             document.getElementById('reset').onclick=reset;
             function handleData(data)
-            {
-                                            
+            {   
+                if (data["popup_flag"]==0)  
+                {
+                    var temp=confirm("Selected locations do not have neighboring nodes in underlying graph.Please select different points.");
+                    return;
+                }  
+                if (data["popup_flag"]==1)  
+                {
+                    var temp=confirm("Could not find a path optimizing elevation for the given threshold (Plotting just the shortest path.).");
+                    
+                }                                        
                 
                 map.addSource("ele_route", {
                     "type": "geojson",
@@ -360,8 +369,7 @@
                     data: input_data,
                     success: function(data){
                         $('#loading').hide();
-                        console.log("POST SUCCESS"); 
-                        console.log(data);
+                        console.log("POST SUCCESS");                         
                         handleData(data);
                         var img = document.createElement("IMG");
                         img.id="eleimage"
