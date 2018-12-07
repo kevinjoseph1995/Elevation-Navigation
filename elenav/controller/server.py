@@ -56,7 +56,7 @@ def create_data(start_location, end_location, x, min_max):
     data["shortDist"] = shortestPath[1]
     data["gainShort"] = shortestPath[2]
     data["dropShort"] = shortestPath[3]  
-    data["elenavDist"]  = elevPath[1]
+    data["elenavDist"] = elevPath[1]
     data["gainElenav"] = elevPath[2]
     data["dropElenav"] = elevPath[3] 
     if len(elevPath[0])==0:
