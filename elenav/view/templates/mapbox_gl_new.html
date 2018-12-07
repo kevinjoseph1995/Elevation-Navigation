@@ -233,7 +233,8 @@
                     document.getElementById('calc_route').innerHTML ="Calculate Route"
                 }
             });
-            document.getElementById('reset').onclick=function(){
+            function reset()
+            {
                 document.getElementById('start').innerHTML ="Start Location : 0";
                 document.getElementById('end').innerHTML ="End Location : 0";
                 document.getElementById('calc_route').innerHTML ="Click start location."
@@ -264,8 +265,34 @@
                 while (temp_ele.firstChild) {
                     temp_ele.removeChild(temp_ele.firstChild);
                 }   
-                document.getElementById('ele_stats').innerHTML="Elevation Statistics:"; 
-            };
+                document.getElementById('ele_stats').innerHTML="Elevation Statistics:";
+
+            }
+            function calc_route_reset()
+            {
+                
+                if (map.getLayer("shortest_route")){
+                    map.removeLayer("shortest_route");
+                }
+
+                if (map.getSource("shortest_route")){
+                    map.removeSource("shortest_route");
+                }
+                if (map.getLayer("ele_route")){
+                    map.removeLayer("ele_route");
+                }
+
+                if (map.getSource("ele_route")){
+                    map.removeSource("ele_route");
+                }
+                var temp_ele = document.getElementById("eleProfile");
+                while (temp_ele.firstChild) {
+                    temp_ele.removeChild(temp_ele.firstChild);
+                }   
+                document.getElementById('ele_stats').innerHTML="Elevation Statistics:";
+
+            }
+            document.getElementById('reset').onclick=reset;
             function handleData(data)
             {
                                             
@@ -320,12 +347,13 @@
                 
 
             }
-            document.getElementById('calc_route').onclick=function(){
+            document.getElementById('calc_route').onclick=function(){                
                 var checkedValue = $('.check:checked').val();  
                 console.log(document.getElementById('x').value) ;             
                 var input_data='{"start_location":'+start_loc+',"x":'+document.getElementById('x').value+',"end_location":'+end_loc+',"min_max":"'+checkedValue.toString()+'"}';                
                 // var input_data='{"start_location":'+start_loc+',"end_location":'+end_loc+'}';                
                 $('#loading').show();
+                calc_route_reset();
                 $.ajax({
                     type: "POST",
                     url: '/route',
