@@ -99,7 +99,7 @@ class Algorithms:
                 if nei not in openSet:# Discover a new node
                     openSet.add(nei)
                 else:
-                    if tentative_gScore > (1+x)*shortest :#Stop searching along this path if distance exceed 1.5 times shortest path
+                    if tentative_gScore >= (1+x)*shortest :#Stop searching along this path if distance exceed 1.5 times shortest path
                         continue # This is not a better path.
                 
                 cameFrom[nei] = current
@@ -227,7 +227,7 @@ class Algorithms:
                             next = length + self.getCost(node, nei, "gain-only")
                     if weight[1] : next += currPriority
                     nextDist = currDist + length
-                    if nextDist < shortest*(1.0+x) and (prev is None or next < prev):
+                    if nextDist <= shortest*(1.0+x) and (prev is None or next < prev):
                         parent[nei] = node
                         mins[nei] = next
                         heappush(q, (next, nextDist, nei))        
@@ -235,12 +235,10 @@ class Algorithms:
         return None, None, None
 
     def all_dijkstra(self):
-        # xi = self.x
+        
         if not self.verify_nodes() : return
         start_node, end_node = self.start_node, self.end_node
         
-        
-        # while xi <= self.x:
             
         for weight in [[1, True], [2, True], [3, True], [1, False], [2, False], [3, False]]:
             _, currDist, parent = self.dijkstra(weight)
@@ -249,17 +247,13 @@ class Algorithms:
             
             route = self.getRoute(parent, end_node)
             elevDist, dropDist = self.computeElevs(route, "gain-only"), self.computeElevs(route, "drop-only")
-            print(elevDist)
+            print(elevDist, dropDist)
             if self.mode == "maximize":
                 if (elevDist > self.best[2]) or (elevDist == self.best[2] and currDist < self.best[1]):
                     self.best = [route[:], currDist, elevDist, dropDist]
             else:
                 if (dropDist > self.best[3]) or (dropDist == self.best[3] and currDist < self.best[1]):
                     self.best = [route[:], currDist,  elevDist, dropDist]
-        
-            # if (self.mode == "maximize" and self.best[2] != float('-inf')) or (self.mode == "minimize" and self.best[3] != float('-inf')):
-            #     break
-            # xi += 0.4
         
         return
 
