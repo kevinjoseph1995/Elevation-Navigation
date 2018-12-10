@@ -26,17 +26,21 @@ class Algorithms:
         self.G = G
     
     def create_elevation_profile(self):
+        """
+        Saves a plot of the elevation profile(for the calculated best elevation path) which is later displayed in the frontend. 
+        """
         if len(self.best[0]) == 0 : return
         G = self.G
         
         elevation_profile_elenav = [G.node[route_node]['elevation'] for route_node in self.best[0]]
-        # elevation_profile_short = [G.node[route_node]['elevation'] for route_node in self.shortest_route]
-        plt.figure()
+        # elevation_profile_short = [G.node[route_node]['elevation'] for route_node in self.shortest_route]       
+        f=plt.figure()
         plt.title("Elevation Profile")
         plt.ylabel("Elevation (m)")
         plt.plot(elevation_profile_elenav,color='black')
         # plt.plot(elevation_profile_short,color='blue')
         plt.savefig('./elenav/view/static/elevation_profile.png')
+        plt.close(f)
         return
 
     def verify_nodes(self):
