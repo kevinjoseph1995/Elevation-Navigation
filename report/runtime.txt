@@ -1,0 +1,208 @@
+# Location 1
+Start Location:(37.8053,-122.4353)
+End Location:(37.7393,-122.5038)
+x = 50
+
+MAXIMIZE
+
+%timeit a.dijkstra([1, True])
+%timeit a.dijkstra([2, True])
+%timeit a.dijkstra([3, True])
+%timeit a.dijkstra([1, False])
+%timeit a.dijkstra([2, False])
+%timeit a.dijkstra([3, False])
+
+1 loop, best of 3: 610 ms per loop
+1 loop, best of 3: 661 ms per loop
+1 loop, best of 3: 641 ms per loop
+1 loop, best of 3: 534 ms per loop
+1 loop, best of 3: 542 ms per loop
+1 loop, best of 3: 469 ms per loop
+
+MINIMIZE
+
+%timeit a.dijkstra([1, True])
+%timeit a.dijkstra([2, True])
+%timeit a.dijkstra([3, True])
+%timeit a.dijkstra([1, False])
+%timeit a.dijkstra([2, False])
+%timeit a.dijkstra([3, False])
+%timeit a.a_star()
+
+1 loop, best of 3: 603 ms per loop
+1 loop, best of 3: 649 ms per loop
+1 loop, best of 3: 638 ms per loop
+1 loop, best of 3: 392 ms per loop
+1 loop, best of 3: 389 ms per loop
+1 loop, best of 3: 370 ms per loop
+1 loop, best of 3: 4.29 s per loop
+
+================================================================
+# Location 2
+Start Location:(37.7866,-122.4631)
+End Location:(37.7467,-122.4226)
+x = 150
+
+MAXIMIZE
+
+%timeit a.dijkstra([1, True])
+%timeit a.dijkstra([2, True])
+%timeit a.dijkstra([3, True])
+%timeit a.dijkstra([1, False])
+%timeit a.dijkstra([2, False])
+%timeit a.dijkstra([3, False])
+
+1 loop, best of 3: 426 ms per loop
+1 loop, best of 3: 414 ms per loop
+1 loop, best of 3: 450 ms per loop
+1 loop, best of 3: 192 ms per loop
+1 loop, best of 3: 175 ms per loop
+1 loop, best of 3: 185 ms per loop
+
+MINIMIZE
+
+%timeit a.dijkstra([1, True])
+%timeit a.dijkstra([2, True])
+%timeit a.dijkstra([3, True])
+%timeit a.dijkstra([1, False])
+%timeit a.dijkstra([2, False])
+%timeit a.dijkstra([3, False])
+%timeit a.a_star():::::::::::::::::::::
+:--
+1 loop, best of 3: 418 ms per loop
+1 loop, best of 3: 408 ms per loop
+1 loop, best of 3: 462 ms per loop
+1 loop, best of 3: 414 ms per loop
+1 loop, best of 3: 364 ms per loop
+1 loop, best of 3: 184 ms per loop
+1 loop, best of 3: 3.41 s per loop
+
+
+================================================================
+
+# Location 3
+Start Location:(37.7765,-122.4179)
+End Location:(37.7746,-122.4911)
+x = 50
+
+MAXIMIZE
+
+%timeit a.dijkstra([1, True])
+%timeit a.dijkstra([2, True])
+%timeit a.dijkstra([3, True])
+%timeit a.dijkstra([1, False])
+%timeit a.dijkstra([2, False])
+%timeit a.dijkstra([3, False]):::::::::::::::::::
+:--
+1 loop, best of 3: 425 ms per loop
+1 loop, best of 3: 428 ms per loop
+1 loop, best of 3: 452 ms per loop
+1 loop, best of 3: 367 ms per loop
+1 loop, best of 3: 391 ms per loop
+1 loop, best of 3: 369 ms per loop
+
+
+MINIMIZE
+
+%timeit a.dijkstra([1, True])
+%timeit a.dijkstra([2, True])
+%timeit a.dijkstra([3, True])
+%timeit a.dijkstra([1, False])
+%timeit a.dijkstra([2, False])
+%timeit a.dijkstra([3, False])
+%timeit a.a_star():::::::::::::::::::::
+:--
+1 loop, best of 3: 433 ms per loop
+1 loop, best of 3: 427 ms per loop
+1 loop, best of 3: 449 ms per loop
+1 loop, best of 3: 325 ms per loop
+1 loop, best of 3: 333 ms per loop
+1 loop, best of 3: 336 ms per loop
+1 loop, best of 3: 2.62 s per loop
+
+================================================================
+# Location 4
+Start Location:(37.8007,-122.4006)
+End Location:(37.7869,-122.4209)
+x = 50
+
+MAXIMIZE
+
+%timeit a.dijkstra([1, True])
+%timeit a.dijkstra([2, True])
+%timeit a.dijkstra([3, True])
+%timeit a.dijkstra([1, False])
+%timeit a.dijkstra([2, False])
+%timeit a.dijkstra([3, False]):::::::::::::::::::
+:--
+10 loops, best of 3: 87.6 ms per loop
+10 loops, best of 3: 93.5 ms per loop
+10 loops, best of 3: 93.1 ms per loop
+10 loops, best of 3: 73.6 ms per loop
+10 loops, best of 3: 66.7 ms per loop
+10 loops, best of 3: 56.8 ms per loop
+
+
+MINIMIZE
+
+%timeit a.dijkstra([1, True])
+%timeit a.dijkstra([2, True])
+%timeit a.dijkstra([3, True])
+%timeit a.dijkstra([1, False])
+%timeit a.dijkstra([2, False])
+%timeit a.dijkstra([3, False])
+%timeit a.a_star()
+::::::::::::::::::::::
+:--
+10 loops, best of 3: 91.4 ms per loop
+10 loops, best of 3: 96.7 ms per loop
+10 loops, best of 3: 94.5 ms per loop
+10 loops, best of 3: 71.6 ms per loop
+10 loops, best of 3: 74.6 ms per loop
+10 loops, best of 3: 78 ms per loop
+1 loop, best of 3: 1.16 s per loop
+
+================================================================
+# Location 5
+Start Location:(37.7792,-122.4991)
+End Location:(37.756,-122.3889)
+x = 50
+
+MAXIMIZE
+
+%timeit a.dijkstra([1, True])
+%timeit a.dijkstra([2, True])
+%timeit a.dijkstra([3, True])
+%timeit a.dijkstra([1, False])
+%timeit a.dijkstra([2, False])
+%timeit a.dijkstra([3, False]):::::::::::::::::::
+:--
+1 loop, best of 3: 884 ms per loop
+1 loop, best of 3: 552 ms per loop
+1 loop, best of 3: 692 ms per loop
+1 loop, best of 3: 539 ms per loop
+1 loop, best of 3: 480 ms per loop
+1 loop, best of 3: 419 ms per loop
+
+
+MINIMIZE
+
+%timeit a.dijkstra([1, True])
+%timeit a.dijkstra([2, True])
+%timeit a.dijkstra([3, True])
+%timeit a.dijkstra([1, False])
+%timeit a.dijkstra([2, False])
+%timeit a.dijkstra([3, False])
+%timeit a.a_star()
+::::::::::::::::::::::
+:--
+1 loop, best of 3: 729 ms per loop
+1 loop, best of 3: 566 ms per loop
+1 loop, best of 3: 673 ms per loop
+1 loop, best of 3: 874 ms per loop
+1 loop, best of 3: 392 ms per loop
+1 loop, best of 3: 294 ms per loop
+1 loop, best of 3: 2.52 s per loop
+
+
+

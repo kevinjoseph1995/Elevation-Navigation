@@ -1,0 +1,14 @@
+RESULTS is a dictitonary
+
+RESULTS = {'Location1':{'nx':{},'max':{},'min':{}}}
+
+RESULTS['Location1']['nx'] has information about shortest path. It has keys 'route','distance','elev' (gain only elevation),'drop' (drop only).
+RESULTS['Location1']['max'] has only Dijkstra's information. 
+RESULTS['Location1']['max']['dijkstra'][WEIGHT] has keys has keys 'route','distance','elev' (gain only elevation),'drop' (drop only).
+WEIGHT = '[1, True]', '[2, True]', '[3, True]', '[1, False]', '[2, False]', '[3, False]'
+Note that all weights may not be available in the dictionary (only those that return a route are added).
+
+RESULTS['Location1']['min'] has both Dijkstra's and Astar information.
+RESULTS['Location1']['max']['dijkstra'][WEIGHT] is same as above.
+RESULTS['Location1']['max']['astar'] has keys 'route','distance','elev' (gain only elevation),'drop' (drop only)
+
