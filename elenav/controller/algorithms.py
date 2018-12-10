@@ -6,6 +6,13 @@ from collections import deque, defaultdict
 
 class Algorithms:
     def __init__(self, G, x = 0.0, mode = "maximize"):
+        """
+        Initialize the class
+        Params:
+        G : Graph object
+        x : percent over shortest distance
+        mode : "maximize" or "minimize" elevation
+        """
         self.G = G
         self.mode = mode
         self.x = x
@@ -13,6 +20,9 @@ class Algorithms:
         self.start_node, self.end_node = None, None
 
     def reload_graph(self, G):
+        """
+        Reinitialize current graph with "G"
+        """
         self.G = G
     
     def create_elevation_profile(self):
@@ -30,6 +40,9 @@ class Algorithms:
         return
 
     def verify_nodes(self):
+        """
+        Verify if the start/end nodes are None
+        """
         if self.start_node is None or self.end_node is None:
             return False
         return True
@@ -120,6 +133,15 @@ class Algorithms:
 
 
     def getCost(self, n1, n2, mode = "normal"):
+        """
+        Different cost metrics between two nodes
+        Params:
+        n1 : node 1
+        n2 : node 2
+        mode : type of cost that we want
+        Returns:
+        Chosen cost between nodes n1 and n2
+        """
         G = self.G
         if n1 is None or n2 is None : return
         if mode == "normal":
@@ -137,16 +159,15 @@ class Algorithms:
 
     def dfs(self, start_node, end_node, currDist = 0.0, elevGain = 0.0, elevDrop = 0.0, path = [], visited = set()):
         """
-        Returns the route(list of nodes) that maximizes absolute change in elevation between start and end using naive dfs
+        Finds the path that maximizes/minimizes absolute change in elevation between start and end using naive dfs
         Params:
-            G : graph
-            start_node: tuple (lat,long)
-            end_node: tuple (lat,long)
+            start_node: node id
+            end_node: node id
             currDist : total distance travelled
-            elevGain : total change in elevation (not considering drops)
-            elevDrop : total sum of drops for the given path
-            path : path of nodes
-            Returns: None. All stats are recorded in best list
+            elevGain : total positive change in elevation
+            elevDrop : total positive change in drops (Eg. A drop from "1" to "2" incurs a cost of max(0, elev("1") - elev("2")))
+            path : current path of nodes
+            Returns: None. All stats are recorded in self.best list
         """
         if not self.verify_nodes() : return
         
@@ -173,6 +194,15 @@ class Algorithms:
         return
 
     def computeElevs(self, route, mode = "both", piecewise = False):
+        """
+        Given a list of node id's, compute the "cost" for that route
+        Params:
+        route : list of node ids
+        mode : the cost metric that we want to aggregate (eg. distance between the nodes)
+        piecewise : boolean variable to indicate if the piecewise cost between the nodes should be returned
+        Returns:
+        Total cost for route, Optional(Piecewise cost for route)
+        """
         total = 0
         if piecewise : piecewiseElevs = []
         for i in range(len(route)-1):
@@ -201,6 +231,23 @@ class Algorithms:
         return path[::-1]
 
     def dijkstra(self, weight):
+        """
+        Finds the path that maximizes/minimizes absolute change in elevation between start and end nodes based on a heap impl.
+        Params:
+            weight : A list of two items. Defines how we wish to mark the cost between two nodes. 
+            The different weight combinations signify :
+            [1, True] : 
+            [2, True] :
+            [3, True] : 
+            [1, False] : 
+            [2, False] :
+            [3, False] : 
+        Returns:
+            currPriority, currDist, parent
+            currPriority : priority of the target node in the heap
+            currDist : total distance covered in the process of reaching the target node
+            parent : a dictionary mapping between children and their parent. Useful for reconstructing the path from the target node.
+        """
         if not self.verify_nodes() : return
         G, x, shortest, mode = self.G, self.x, self.shortest_dist, self.mode
         start_node, end_node = self.start_node, self.end_node
@@ -245,7 +292,10 @@ class Algorithms:
         return None, None, None
 
     def all_dijkstra(self):
-        
+        """
+        Iteratively try out different weighting criterion for Dijkstra.
+        Choose the one that returns the best result and store that in self.best
+        """
         if not self.verify_nodes() : return
         start_node, end_node = self.start_node, self.end_node
         
@@ -268,6 +318,28 @@ class Algorithms:
 
 
     def shortest_path(self, start_location, end_location, x, algo = "dijkstra", mode = "maximize", log = True):
+        """
+        Function to calculate the shortest path between the start_location and end_location.
+        Params:
+        start_location : tuple (lat, lng)
+        end_location : tuple (lat, lng)
+        x : how much more can we go above the shortest distance
+        algo : the algorithm to use for finding the specific path (dfs/astar/dijkstra)
+        mode : minimize/maximize elevation
+        log : log the results as the function runs
+        Returns:
+        L1, L2
+        both list contain four items : [best route found, 
+                                        total distance between the start and ending nodes of the best route, 
+                                        total positive change in elevation,
+                                        total negative change in elevation ]
+        L1 returns the statistics for the shortest path while L2 returns the statistics for the path considering elevation
+        If we are going from node "1" to node "2" : 
+        total positive change in elevation : (max(0, elev("2") - elev("1"))
+        total negative change in elevation : (max(0, elev("1") - elev("2"))
+        If the start_location, end_location are outside the defined graph, L1 and L2 will be None.
+        L2 will be None incase no route is found by our custom algorithms.
+        """
         G = self.G
         self.x = x/100.0
         self.mode = mode
