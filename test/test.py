@@ -1,5 +1,4 @@
 import sys
-# sys.path.insert(0, '..')
 import osmnx as ox
 import networkx as nx
 from elenav.controller.settings import *
@@ -156,7 +155,6 @@ if __name__ == "__main__":
         G.node[i]["elevation"] = e
     
     A = Algorithms(G, x = 0.0)
-    # A.shortest_path(start_location, end_location, x, algo = "dijkstra", mode = "maximize")
 
     print("====>Testing get_bounding_box")
     test_get_bounding_box(start, end)
