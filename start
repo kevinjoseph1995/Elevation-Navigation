@@ -1,5 +1,5 @@
 #!/bin/bash
-export MPLBACKEND=TkAgg
+# export MPLBACKEND=TkAgg
 source activate elenav
 export FLASK_APP=elenav/controller/server.py
 export FLASK_DEBUG=1

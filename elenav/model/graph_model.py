@@ -46,10 +46,11 @@ class Model:
         return bbox
 
     def get_graph(self, start_location, end_location):
+        """
+        Return networkx graph with the elevation data added to the nodes. (If theis class had already been called before it will load the cached
+        graph to save time. 
+        """
 
-        
-        #Graph initialization
-        # bbox = self.get_bounding_box(start_location, end_location)
 
         if not self.init:
             print("Loading Graph")

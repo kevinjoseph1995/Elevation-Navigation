@@ -233,6 +233,7 @@
                     document.getElementById('calc_route').innerHTML ="Calculate Route"
                 }
             });
+            
             function reset()
             {
                 document.getElementById('start').innerHTML ="Start Location : 0";
@@ -298,7 +299,7 @@
                 if (data["popup_flag"]==0)  
                 {
                     var temp=confirm("Selected locations do not have neighboring nodes in underlying graph.Please select different points.");
-                    return;
+                    return; print(elevation_profile_elenav)
                 }  
                 console.log(data["popup_flag"])
                 if (data["popup_flag"]==1)  
@@ -407,7 +408,7 @@
         * Austin WOEID: 2357536
         */
         $(document).ready(function() {
-        loadWeather('Boston',''); //@params location, woeid
+        loadWeather('San Francisco',''); //@params location, woeid
         });
 
         function loadWeather(location, woeid) {
