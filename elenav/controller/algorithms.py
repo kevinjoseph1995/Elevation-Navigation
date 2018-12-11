@@ -107,7 +107,7 @@ class Algorithms:
         fScore = {}
 
         # For the first node, that value is completely heuristic.
-        fScore[start_node] = 0#G.nodes[start_node]['dist_from_dest']
+        fScore[start_node] = G.nodes[start_node]['dist_from_dest']
         
         while len(openSet):
             current = min([(node,fScore[node]) for node in openSet], key=lambda t: t[1])[0]            
@@ -127,12 +127,11 @@ class Algorithms:
                     openSet.add(nei)
                 else:
                     if tentative_gScore >= gScore[nei] or tentative_gScore1>=(1+x)*shortest:#Stop searching along this path if distance exceed 1.5 times shortest path
-                        continue # This is not a better path.
-                
+                        continue # This is not a better path.                
                 cameFrom[nei] = current
                 gScore[nei] = tentative_gScore
                 gScore1[nei] = tentative_gScore1
-                fScore[nei] = gScore[nei] # + G.nodes[neighbor]['dist_from_dest']
+                fScore[nei] = gScore[nei] + G.nodes[nei]['dist_from_dest']
         
 
 
@@ -366,7 +365,7 @@ class Algorithms:
             if log : print("dfs")
             self.dfs(self.start_node, self.end_node)        
         
-        elif algo == "astar":
+        elif algo == "astar" or mode=="minimize":
             if log : print("astar")
             self.a_star()        
         

@@ -42,7 +42,7 @@ def create_data(start_location, end_location, x, min_max):
         algorithms = Algorithms(G, x = x, mode = min_max)
         init = True
     
-    shortestPath, elevPath = algorithms.shortest_path(start_location, end_location, x, mode = min_max)   
+    shortestPath, elevPath = algorithms.shortest_path(start_location, end_location, x, mode = min_max,log=True)   
     
     if shortestPath is None and elevPath is None:
         data = {"elevation_route" : [] , "shortest_route" : []}        
