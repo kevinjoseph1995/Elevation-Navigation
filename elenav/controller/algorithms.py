@@ -238,13 +238,6 @@ class Algorithms:
         Finds the path that maximizes/minimizes absolute change in elevation between start and end nodes based on a heap impl.
         Params:
             weight : A list of two items. Defines how we wish to mark the cost between two nodes. 
-            The different weight combinations signify :
-            [1, True] : 
-            [2, True] :
-            [3, True] : 
-            [1, False] : 
-            [2, False] :
-            [3, False] : 
         Returns:
             currPriority, currDist, parent
             currPriority : priority of the target node in the heap
